@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>htmlEcharts/echarts.min.js</file>
+        <file>htmlEcharts/view1.html</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <script src="./echarts.min.js"></script>
+    <script type="text/javascript" src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="main" style="width: 750px;height:450px;"></div>
+    <!--  <ul id=gamesetting></ul> -->
+    <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+        var schema = [];
+        var option = {
+            backgroundColor: '#252525',
+            title: {
+                text: '金钱比较',
+                textStyle: {
+                    fontWeight: 'normal',
+                    fontSize: 16,
+                    color: '#F1F1F3'
+                },
+                left: '6%'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' },
+                padding: 10,
+                backgroundColor: '#222',
+                borderColor: '#777',
+                borderWidth: 1,
+                formatter: function (obj) {
+                    var out = [];
+                    for (var i = 0; i < obj.length; i++) {
+                        out += '<div style="border-bottom: 1px solid rgba(255,255,255,.3);font-size:18px;padding-bottom:7px;margin-bottom:7px">';
+                        out += obj[i].seriesName;
+                        out += '</div><table><tr>';
+                        out += '<td>' + schema[1].text + '：</td><td>' + obj[i].data[1] + '</td>';
+                        out += '<td>' + schema[2].text + '：</td><td>' + obj[i].data[2] + '</td>';
+                        out += '<td>' + schema[3].text + '：</td><td>' + obj[i].data[3] + '</td>';
+                        out += '<td>' + schema[4].text + '：</td><td>' + obj[i].data[4] + '</td>';
+                        out += '<td>' + schema[5].text + '：</td><td>' + obj[i].data[5] + '</td>';
+                        out += '<td>' + schema[6].text + '：</td><td>' + obj[i].data[6] + '</td>';
+                        out += '<td>' + schema[7].text + '：</td><td>' + obj[i].data[7] + '</td>';
+                        out += '</tr></table><br>';
+                    }
+                    return out;
+                }
+            },
+            toolbox: {
+                feature: { saveAsImage: {} }
+            },
+            legend: {},
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: [{ type: 'value', name: 's', nameGap: 16, splitLine: { show: false }, axisLine: { lineStyle: { color: '#57617B' } } }],
+            yAxis: [{
+                type: 'value', name: '$', axisTick: { show: false },
+                axisLine: { lineStyle: { color: '#57617B' } },
+                axisLabel: { margin: 10, textStyle: { fontSize: 14 } },
+                splitLine: { lineStyle: { color: '#57617B' } }
+            }],
+            series: []
+        };
+        myChart.showLoading();
+        myChart.setOption(option);
+
+        function setSize(size) {
+            var main = document.getElementById('main');
+            main.style.width = size["width"] + "px";
+            main.style.height = size["height"] + "px";
+            myChart.resize();
+        }
+        
+        function load_json(t_json) {
+            
+            var obj = eval("(" + t_json + ")");//转换后的json对象
+            /*
+            for (var item in obj) {
+                $('#gamesetting').append('<div><strong>' + item + '</strong></div>');
+            }
+            $('#gamesetting').append('<div><strong>' + JSON.stringify(obj.series) + '</strong></div>');
+            $('#gamesetting').append('<div><strong>' + JSON.stringify(obj.legend) + '</strong></div>');
+            */
+            schema = obj.schema;
+            
+            option['series'] = obj.series;
+            option['legend'] = obj.legend;
+            myChart.setOption(option);
+            myChart.hideLoading();
+        }
+        function reset_echart() {
+            schema = []
+            option['series'] = []
+            option['legend'] = {};
+            myChart.setOption(option);
+            myChart.showLoading();
+        }
+    </script>
+</body>
+
+</html>
