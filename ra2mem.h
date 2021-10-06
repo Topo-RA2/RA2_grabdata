@@ -57,6 +57,8 @@ private:
     bool echartIsLoaded;
 
 public:
+    enum dataArraySet {cash,soliders,dog,miner,mainTank,warFactory,soliderFactory};
+
     DWORD PID = 0;
     QTimer* checkTimer;
     QTimer* checkTimer2;

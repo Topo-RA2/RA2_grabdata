@@ -391,14 +391,13 @@ void RA2Mem::switchStatusCode(int code){
                         ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
 
                     }//else end
-                    int tmp = 0;
-                    dataArray[j][tmp++][elaspedTime] = cashCount;
-                    dataArray[j][tmp++][elaspedTime] = solidersCount;
-                    dataArray[j][tmp++][elaspedTime] = dogCount;
-                    dataArray[j][tmp++][elaspedTime] = minerCount;
-                    dataArray[j][tmp++][elaspedTime] = mainTankCount;
-                    dataArray[j][tmp++][elaspedTime] = warFactoryCount;
-                    dataArray[j][tmp++][elaspedTime] = soliderFactoryCount;
+                    dataArray[j][cash][elaspedTime] = cashCount;
+                    dataArray[j][soliders][elaspedTime] = solidersCount;
+                    dataArray[j][dog][elaspedTime] = dogCount;
+                    dataArray[j][miner][elaspedTime] = minerCount;
+                    dataArray[j][mainTank][elaspedTime] = mainTankCount;
+                    dataArray[j][warFactory][elaspedTime] = warFactoryCount;
+                    dataArray[j][soliderFactory][elaspedTime] = soliderFactoryCount;
 
                     j++;
                 }
@@ -464,9 +463,12 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
         //QJsonArray playerArray{QJsonArray{-2,0,0,0,0,0,0},QJsonArray{-1,0,0,0,0,0,0}};
         QJsonArray playerArray;
+        QJsonArray playerMarkPoint;
+        int init_miner_num = 0, init_factory_num = 0;
+
         if(opt != 1)
         {
-            int jumpFlag = 0;
+            //int jumpFlag = 0;
             for(int p_time = 0; p_time < elaspedTime; ++p_time){//每个时间
                 /*
                 if(0 == jumpFlag){
@@ -480,10 +482,30 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
                 }*/
                 QJsonArray frameArray;
                 frameArray.append(p_time);//把时间放进去
+
                 for(int p_class = 0; p_class < CLASS; ++p_class){//有什么单位
                     frameArray.append(dataArray[p_cnt][p_class][p_time]);
                 }
                 playerArray.append(frameArray);
+
+                QJsonObject miner_change, factory_change;
+                if(init_miner_num != dataArray[p_cnt][miner][p_time]){
+
+                    init_miner_num = dataArray[p_cnt][miner][p_time];
+                    miner_change.insert("coord",
+                                        QJsonArray{p_time,dataArray[p_cnt][cash][p_time]+10});
+                    miner_change.insert("value",
+                                        QString("%1矿车").arg(init_miner_num));
+                    playerMarkPoint.append(miner_change);
+                }
+                if(init_factory_num != dataArray[p_cnt][warFactory][p_time]){
+                    init_factory_num = dataArray[p_cnt][warFactory][p_time];
+                    factory_change.insert("coord",
+                                        QJsonArray{p_time,dataArray[p_cnt][cash][p_time]+10});
+                    factory_change.insert("value",
+                                        QString("%1重工").arg(init_factory_num));
+                    playerMarkPoint.append(factory_change);
+                }
             }
         }
 
@@ -508,7 +530,13 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
                             {"borderWidth", 10},
                         }}
                 }},
-            {"data", playerArray}
+            {"data", playerArray},
+            {"markPoint", QJsonObject{{"data", playerMarkPoint}}},
+            {"markLine", QJsonObject{{"data", QJsonArray{
+                                    QJsonObject{{"type", "average"},
+                                        {"name", "Avg"}}
+                            }}}
+            }
         };
         seriesJsonArray.append(seriesJsonObj);
     }
