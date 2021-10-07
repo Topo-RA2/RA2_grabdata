@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div id="main" style="width: 750px;height:450px;"></div>
+    <div id="main" style="width: 1366px;height:550px;"></div>
     <!--  <ul id=gamesetting></ul> -->
     <script type="text/javascript">
         var myChart = echarts.init(document.getElementById('main'));
@@ -50,11 +50,17 @@
                     return out;
                 }
             },
+            dataZoom: [
+                {type: 'slider',xAxisIndex: [0],minSpan: 20},
+                {type: 'inside',xAxisIndex: [0],minSpan: 20},
+                {type: 'slider',yAxisIndex: [0],minSpan: 20},
+                {type: 'inside',yAxisIndex: [0],minSpan: 20}
+            ],
             toolbox: {
                 feature: { saveAsImage: {} }
             },
             legend: {},
-            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            grid: { left: '1%', right: '5%', bottom: '10%', containLabel: true },
             xAxis: [{ type: 'value', name: 's', nameGap: 16, splitLine: { show: false }, axisLine: { lineStyle: { color: '#57617B' } } }],
             yAxis: [{
                 type: 'value', name: '$', axisTick: { show: false },
@@ -73,9 +79,9 @@
             main.style.height = size["height"] + "px";
             myChart.resize();
         }
-        
+
         function load_json(t_json) {
-            
+
             var obj = eval("(" + t_json + ")");//转换后的json对象
             /*
             for (var item in obj) {
@@ -85,7 +91,7 @@
             $('#gamesetting').append('<div><strong>' + JSON.stringify(obj.legend) + '</strong></div>');
             */
             schema = obj.schema;
-            
+
             option['series'] = obj.series;
             option['legend'] = obj.legend;
             myChart.setOption(option);
