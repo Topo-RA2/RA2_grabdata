@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QMap>
 #include <QFile>
@@ -25,7 +25,7 @@
 
 #include "config.h"
 
-const int CLASS = 7;
+const int CLASS = 8;
 const int NUM = 1500;
 const int PLAYERNUM = 8;
 
@@ -57,7 +57,7 @@ private:
     bool echartIsLoaded;
 
 public:
-    enum dataArraySet {cash,soliders,dog,miner,mainTank,warFactory,soliderFactory};
+    enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
 
     DWORD PID = 0;
     QTimer* checkTimer;
@@ -84,6 +84,7 @@ public:
     QJsonArray playerlistArray;
     QJsonArray totalFrame;
     QList<QPair<QString,QString>> schema;
+    int web_index = 0;
 
     void startTimer();
     void switchStatusCode(int);

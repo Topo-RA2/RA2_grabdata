@@ -1,17 +1,19 @@
-#include "ra2mem.h"
+﻿#include "ra2mem.h"
 #include "ui_ra2mem.h"
+
 RA2Mem::RA2Mem(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RA2Mem)
 {
-    schema.append(qMakePair(QString::fromUtf8("date"), QString::fromUtf8("s")));
-    schema.append(qMakePair(QString::fromUtf8("money"), QString::fromUtf8("金钱")));
-    schema.append(qMakePair(QString::fromUtf8("soliders"), QString::fromUtf8("大兵")));
-    schema.append(qMakePair(QString::fromUtf8("dog"), QString::fromUtf8("狗狗")));
-    schema.append(qMakePair(QString::fromUtf8("miner"), QString::fromUtf8("矿车")));
-    schema.append(qMakePair(QString::fromUtf8("tank"), QString::fromUtf8("坦克")));
-    schema.append(qMakePair(QString::fromUtf8("factory"), QString::fromUtf8("重工")));
-    schema.append(qMakePair(QString::fromUtf8("s_factory"), QString::fromUtf8("兵营")));
+    schema.append(qMakePair(QString::fromUtf8("date"),      QStringLiteral("s")));
+    schema.append(qMakePair(QString::fromUtf8("consume"),     QStringLiteral("金钱消耗")));
+    schema.append(qMakePair(QString::fromUtf8("soliders"),  QStringLiteral("大兵")));
+    schema.append(qMakePair(QString::fromUtf8("dog"),       QStringLiteral("狗狗")));
+    schema.append(qMakePair(QString::fromUtf8("miner"),     QStringLiteral("矿车")));
+    schema.append(qMakePair(QString::fromUtf8("tank"),      QStringLiteral("坦克")));
+    schema.append(qMakePair(QString::fromUtf8("factory"),   QStringLiteral("重工")));
+    schema.append(qMakePair(QString::fromUtf8("s_factory"), QStringLiteral("兵营")));
+    schema.append(qMakePair(QString::fromUtf8("money"),  QStringLiteral("金钱剩余")));
 
     color2RGB[0] = "rgba(238,238,0,1)";//黄
     color2RGB[1] = "rgba(255,48,48,1)";//红
@@ -47,7 +49,7 @@ RA2Mem::~RA2Mem()
 void RA2Mem::onResizeEcharts()
 {
     echartIsLoaded = true;
-    ui->label_2->setText("echart initialization complete");
+    ui->label_2->setText("initialization complete");
     QJsonObject sizeData;
     sizeData.insert("width", ui->webview1->width() - 20);
     sizeData.insert("height", ui->webview1->height() - 20);
@@ -65,6 +67,7 @@ void RA2Mem::resizeEvent(QResizeEvent *event)
 
 void RA2Mem::on_comboBox_currentIndexChanged(int index)
 {
+    web_index = index;
     QString url = QString("qrc:/htmlEcharts/view%1.html").arg(index+1);
     ui->webview1->load(QUrl(url));
 }
@@ -207,7 +210,20 @@ void RA2Mem::switchStatusCode(int code){
 
     if(code == 1) // read spawnini
     {
+        for(int i=0; i < playerlistArray.size(); ++i)//清空数组
+             playerlistArray.removeFirst();
+
+        elaspedTime = 0;
+        battlePlayerCnt = 0;
+        for(int t = 0; t < PLAYERNUM; ++t){
+            for(int tt = 0; tt < NUM; ++tt)
+                dataArray[t][0][tt] = -1;
+        }
+        playerNameList.clear();
+        playerColorList.clear();
+
         ui->pushButton->setDisabled(true);
+        ui->comboBox->setDisabled(true);
         QString js = QString("reset_echart();");
         ui->webview1->page()->runJavaScript(js);
         Config ini(qGameFile + "\\spawn.ini");
@@ -296,6 +312,7 @@ void RA2Mem::switchStatusCode(int code){
                 int dogAddress, dogCount;
                 int minerAddress, minerCount;
                 int cashAddress, cashCount;
+                int consumeAddress, consumeCount;
                 int mainTankAddress, mainTankCount;
                 int warFactoryAddress, warFactoryCount;
                 int isAddressValid;
@@ -332,6 +349,12 @@ void RA2Mem::switchStatusCode(int code){
                         qDebug() << "break";
                         break;
                     }
+                    consumeAddress = playerAddress;
+                    consumeAddress += 0x2DC;
+                    isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(consumeAddress), &consumeCount, sizeof(consumeAddress), 0);
+                    if (isAddressValid == 0)
+                        consumeCount = 0;
+
                     if (playerCountry[i] >= 5)
                     {
                         //动员兵
@@ -407,13 +430,14 @@ void RA2Mem::switchStatusCode(int code){
 
                     }//else end
 
-                    dataArray[j][cash][elaspedTime] = cashCount;
+                    dataArray[j][consume][elaspedTime] = consumeCount;
                     dataArray[j][soliders][elaspedTime] = solidersCount;
                     dataArray[j][dog][elaspedTime] = dogCount;
                     dataArray[j][miner][elaspedTime] = minerCount;
                     dataArray[j][mainTank][elaspedTime] = mainTankCount;
                     dataArray[j][warFactory][elaspedTime] = warFactoryCount;
                     dataArray[j][soliderFactory][elaspedTime] = soliderFactoryCount;
+                    dataArray[j][cash][elaspedTime] = cashCount;
                     j++;
                 }
             }
@@ -424,6 +448,7 @@ void RA2Mem::switchStatusCode(int code){
     else if(code == 0)//没有游戏
     {
         ui->pushButton->setEnabled(true);
+        ui->comboBox->setEnabled(true);
         qDebug() << "come in 0";
         checkTimer2->stop();
         ui->label_2->setText("generated");
@@ -449,17 +474,6 @@ void RA2Mem::switchStatusCode(int code){
         QString js = QString("load_json(\"%1\");").arg(str);
 
         ui->webview1->page()->runJavaScript(js);
-        ui->webview1->page()->runJavaScript(js);
-
-        for(int i=0; i < playerlistArray.size(); ++i)//清空数组
-             playerlistArray.removeFirst();
-
-        elaspedTime = 0;
-        battlePlayerCnt = 0;
-        for(int t = 0; t < PLAYERNUM; ++t){
-            for(int tt = 0; tt < NUM; ++tt)
-                dataArray[t][0][tt] = -1;
-        }
     }
     //*/
 }
@@ -489,19 +503,24 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
             //int jumpFlag = 0;
             for(int p_time = 0; p_time < elaspedTime; ++p_time){//每个时间
                 if(-1 == dataArray[p_cnt][0][p_time])
-                    break;
+                {
+                    continue;
+                }
                 int sum = 0;
                 for(int p_class = 0; p_class < CLASS; ++p_class){
                     sum += dataArray[p_cnt][p_class][p_time];
                 }
-                if(sum >= 600000)
-                    break;
+                //if(sum >= 600000)
+                //    break;
 
                 QJsonArray frameArray;
                 frameArray.append(p_time);//把时间放进去
 
                 for(int p_class = 0; p_class < CLASS; ++p_class){//有什么单位
-                    frameArray.append(dataArray[p_cnt][p_class][p_time]);
+                    if(dataArray[p_cnt][p_class][p_time] >= 3000000)
+                        frameArray.append(0);
+                    else
+                        frameArray.append(dataArray[p_cnt][p_class][p_time]);
                 }
                 playerArray.append(frameArray);
 
@@ -510,17 +529,17 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
 
                     init_miner_num = dataArray[p_cnt][miner][p_time];
                     miner_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[p_cnt][cash][p_time]+10});
+                                        QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
                     miner_change.insert("value",
-                                        QString("%1矿车").arg(init_miner_num));
+                                        QStringLiteral("%1矿车").arg(init_miner_num));
                     playerMarkPoint.append(miner_change);
                 }
                 if(init_factory_num != dataArray[p_cnt][warFactory][p_time]){
                     init_factory_num = dataArray[p_cnt][warFactory][p_time];
                     factory_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[p_cnt][cash][p_time]+10});
+                                        QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
                     factory_change.insert("value",
-                                        QString("%1重工").arg(init_factory_num));
+                                        QStringLiteral("%1重工").arg(init_factory_num));
                     playerMarkPoint.append(factory_change);
                 }
             }
