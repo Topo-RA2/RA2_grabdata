@@ -91,6 +91,8 @@ public:
     QJsonArray generateEchartOptionSeries(int);
     QJsonObject generateEchartOptionLegend();
     QJsonObject generateDataJson();
+    DWORD readMemory(HANDLE, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD);
     DWORD readMemory(HANDLE, DWORD, DWORD, DWORD);
     DWORD readMemory(HANDLE, DWORD, DWORD, DWORD, DWORD, DWORD);
 
