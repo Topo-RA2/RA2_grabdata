@@ -17,7 +17,7 @@
         var option = {
             backgroundColor: '#252525',
             title: {
-                text: '金钱比较',
+                text: '金钱消耗',
                 textStyle: {
                     fontWeight: 'normal',
                     fontSize: 16,
@@ -45,16 +45,17 @@
                         out += '<td>' + schema[5].text + '：</td><td>' + obj[i].data[5] + '</td>';
                         out += '<td>' + schema[6].text + '：</td><td>' + obj[i].data[6] + '</td>';
                         out += '<td>' + schema[7].text + '：</td><td>' + obj[i].data[7] + '</td>';
+                        out += '<td>' + schema[8].text + '：</td><td>' + obj[i].data[8] + '</td>';
                         out += '</tr></table><br>';
                     }
                     return out;
                 }
             },
             dataZoom: [
-                {type: 'slider',xAxisIndex: [0],minSpan: 20},
-                {type: 'inside',xAxisIndex: [0],minSpan: 20},
-                {type: 'slider',yAxisIndex: [0],minSpan: 20},
-                {type: 'inside',yAxisIndex: [0],minSpan: 20}
+                { type: 'slider', xAxisIndex: [0], minSpan: 20 },
+                { type: 'inside', xAxisIndex: [0], minSpan: 20 },
+                { type: 'slider', yAxisIndex: [0], minSpan: 20 },
+                { type: 'inside', yAxisIndex: [0], minSpan: 20 }
             ],
             toolbox: {
                 feature: { saveAsImage: {} }

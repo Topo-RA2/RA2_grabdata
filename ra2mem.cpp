@@ -24,6 +24,15 @@ RA2Mem::RA2Mem(QWidget *parent) :
     color2RGB[6] = "rgba(160,32,240,1)";//紫
     color2RGB[7] = "rgba(205,150,205,1)";//粉
 
+    color2RGB[8] = "rgba(238,238,0,0.1)";//黄
+    color2RGB[9] = "rgba(255,48,48,0.1)";//红
+    color2RGB[10] = "rgba(45,85,225,0.1)";//蓝
+    color2RGB[11] = "rgba(34,139,34,0.1)";//绿
+    color2RGB[12] = "rgba(205,133,0,0.1)";//橙
+    color2RGB[13] = "rgba(64,215,208,0.1)";//天蓝
+    color2RGB[14] = "rgba(160,32,240,0.1)";//紫
+    color2RGB[15] = "rgba(205,150,205,0.1)";//粉
+
     gameStatus = 0;
     elaspedTime = 0;
     battlePlayerCnt = 0;
@@ -465,7 +474,6 @@ void RA2Mem::switchStatusCode(int code){
         jsonDocObj.insert("legend", option_legend);
 
         jsonDoc.setObject(jsonDocObj);
-        qDebug()<<jsonDoc.toJson();
         gameData->write(jsonDoc.toJson());
         gameData->close();
 
@@ -496,22 +504,32 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
         //QJsonArray playerArray{QJsonArray{-2,0,0,0,0,0,0},QJsonArray{-1,0,0,0,0,0,0}};
         QJsonArray playerArray;
         QJsonArray playerMarkPoint;
+        QJsonArray playerMarkArea;
         int init_miner_num = 0, init_factory_num = 0;
 
         if(opt != 1)
         {
             //int jumpFlag = 0;
             for(int p_time = 0; p_time < elaspedTime; ++p_time){//每个时间
-                if(-1 == dataArray[p_cnt][0][p_time])
-                {
+                if(-1 == dataArray[p_cnt][cash][p_time])
                     continue;
-                }
+
                 int sum = 0;
                 for(int p_class = 0; p_class < CLASS; ++p_class){
                     sum += dataArray[p_cnt][p_class][p_time];
                 }
                 //if(sum >= 600000)
                 //    break;
+                if(p_time >= 10)
+                {
+                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 500)
+                    {
+                        playerMarkArea.append(QJsonArray{
+                                                     QJsonObject{{"xAxis",p_time-1}},
+                                                     QJsonObject{{"xAxis",p_time}}
+                                                 });
+                    }
+                }
 
                 QJsonArray frameArray;
                 frameArray.append(p_time);//把时间放进去
@@ -531,7 +549,7 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
                     miner_change.insert("coord",
                                         QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
                     miner_change.insert("value",
-                                        QStringLiteral("%1矿车").arg(init_miner_num));
+                                        QStringLiteral("%1牛").arg(init_miner_num));
                     playerMarkPoint.append(miner_change);
                 }
                 if(init_factory_num != dataArray[p_cnt][warFactory][p_time]){
@@ -539,7 +557,7 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
                     factory_change.insert("coord",
                                         QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
                     factory_change.insert("value",
-                                        QStringLiteral("%1重工").arg(init_factory_num));
+                                        QStringLiteral("%1重").arg(init_factory_num));
                     playerMarkPoint.append(factory_change);
                 }
             }
@@ -571,7 +589,13 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
             {"markLine", QJsonObject{{"data", QJsonArray{
                                     QJsonObject{{"type", "average"},
                                         {"name", "Avg"}}
-                            }}}
+                            }}}},
+            {"markArea", QJsonObject{{"data", playerMarkArea},
+                                     {"itemStyle",QJsonObject{
+                                                    {{"color", color2RGB[playerColorList[p_cnt] + 8]}}
+                                                  }
+                                     }
+                         }
             }
         };
         seriesJsonArray.append(seriesJsonObj);
