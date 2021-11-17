@@ -224,6 +224,10 @@ void RA2Mem::switchStatusCode(int code){
 
         elaspedTime = 0;
         battlePlayerCnt = 0;
+        spectatorCount = 0;
+        for(int t = 0; t < PLAYERNUM; ++t){
+            addrRead[t] = -1;
+        }
         for(int t = 0; t < PLAYERNUM; ++t){
             for(int tt = 0; tt < NUM; ++tt)
                 dataArray[t][0][tt] = -1;
@@ -238,7 +242,10 @@ void RA2Mem::switchStatusCode(int code){
         Config ini(qGameFile + "\\spawn.ini");
 
         if (ini.Get("Settings", "IsSpectator") == "True")//自己是观察者
+        {
             isSpectatorPlayer[0] = 1;
+            spectatorCount++;
+        }
         else
             isSpectatorPlayer[0] = 0;
 
@@ -254,7 +261,10 @@ void RA2Mem::switchStatusCode(int code){
             playerCountry[i] = ini.Get(otherlist.at(i - 1), "Side").toInt();
             //是观察者
             if (ini.Get(otherlist.at(i - 1), "IsSpectator") == "True")
+            {
                 isSpectatorPlayer[i] = 1;
+                spectatorCount++;
+            }
             else
                 isSpectatorPlayer[i] = 0;
 
@@ -270,9 +280,27 @@ void RA2Mem::switchStatusCode(int code){
                 }
             }
         }
-        for (int i = 0; i < playerCount; ++i)
-            qDebug() << playerName[i] << "\t" << playerColor[i];
+        for (int i = 0,j = 0; i < playerCount; ++i) {
+            if(isSpectatorPlayer[i] != 0) { //不是观察者
+                addrRead[i] = j++;
+            }
+            else { // 是观察者
+                if(1 == spectatorCount) { // 全场唯一观察
+                    continue;
+                }
+                else { //两个以上观察
+                    if(playerName[i] != localName) { //不是我自己
+                        addrRead[i] = j++;
+                    }
+                    else { // 是我自己
+                        continue;
+                    }
+                }
+            }
+        }
 
+        for (int i = 0; i < playerCount; ++i)
+            qDebug() << playerName[i] << "\t" << playerColor[i] << "addrRead:" << addrRead[i];
         for (int i = 0; i < playerCount; ++i){
             if (!isSpectatorPlayer[i])//不是观察者则显示名字
             {
@@ -326,15 +354,18 @@ void RA2Mem::switchStatusCode(int code){
                 int warFactoryAddress, warFactoryCount;
                 int isAddressValid;
 
-                //如果本机是观察者 则不会写入884b94那段内存
-                if (isSpectatorPlayer[i] == 1 && playerName[i] == localName)
+                //0.存在一个真实的观察者需要被跳过，其他的观察者都是占位的
+                //1.如果本机是观察者 不会占位
+                //2.如果全场只有一个观察者，这个观察者不会占位
+                //？3.如果包括自己有两个及以上的观察者，符合1，自己不会占位
+                //？4.如果除了自己有两个以上的观察者，只有一个不会占位
+                if ( (isSpectatorPlayer[i] == 1 && playerName[i] == localName) || (1 == spectatorCount))
                     k = 1;
                 //i代表第几个玩家 j代表经过了多少个不是观察者的玩家
                 if (!isSpectatorPlayer[i])
                 {
                     qDebug() << "playerName" << playerName[i] << "no spectator";
-                    qDebug() << "i: " << i << "\tj: " << j;
-
+                    qDebug() << "i: " << i << "\t(i-k):j = " << i-k << j ;
 
                     int playerAddress = readMemory(gameProcess, 0x884b94 + (i - k) * 4);
                     int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + (i - k) * 4, 0x557c);
@@ -447,6 +478,9 @@ void RA2Mem::switchStatusCode(int code){
                     dataArray[j][warFactory][elaspedTime] = warFactoryCount;
                     dataArray[j][soliderFactory][elaspedTime] = soliderFactoryCount;
                     dataArray[j][cash][elaspedTime] = cashCount;
+                    qDebug() << j << dataArray[j][consume][elaspedTime]
+                                << dataArray[j][soliders][elaspedTime]
+                                << dataArray[j][cash][elaspedTime];
                     j++;
                 }
             }
@@ -522,7 +556,7 @@ QJsonArray RA2Mem::generateEchartOptionSeries(int opt){//opt=1,data=[]
                 //    break;
                 if(p_time >= 10)
                 {
-                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 500)
+                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 280)
                     {
                         playerMarkArea.append(QJsonArray{
                                                      QJsonObject{{"xAxis",p_time-1}},

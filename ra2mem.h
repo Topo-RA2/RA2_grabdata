@@ -73,6 +73,8 @@ public:
     int playerColor[PLAYERNUM] = { 0 };
     int playerCountry[PLAYERNUM];
     int isSpectatorPlayer[PLAYERNUM];
+    int spectatorCount = 0;
+    int addrRead[PLAYERNUM];
     QList<QString> playerNameList;
     QList<int> playerColorList;
     QList<QString> otherlist = { "other1","other2", "other3", "other4", "other5", "other6", "other7", };
