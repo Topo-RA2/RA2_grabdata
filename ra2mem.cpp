@@ -227,6 +227,7 @@ void RA2Mem::switchStatusCode(int code){
         spectatorCount = 0;
         for(int t = 0; t < PLAYERNUM; ++t){
             addrRead[t] = -1;
+            isSpectatorPlayer[t] = 0;
         }
         for(int t = 0; t < PLAYERNUM; ++t){
             for(int tt = 0; tt < NUM; ++tt)
@@ -281,14 +282,14 @@ void RA2Mem::switchStatusCode(int code){
             }
         }
         for (int i = 0,j = 0; i < playerCount; ++i) {
-            if(isSpectatorPlayer[i] != 0) { //不是观察者
+            if(isSpectatorPlayer[i] == 0) { //不是观察者
                 addrRead[i] = j++;
             }
             else { // 是观察者
                 if(1 == spectatorCount) { // 全场唯一观察
                     continue;
                 }
-                else { //两个以上观察
+                else if(spectatorCount >= 2) { //两个以上观察
                     if(playerName[i] != localName) { //不是我自己
                         addrRead[i] = j++;
                     }
@@ -300,7 +301,10 @@ void RA2Mem::switchStatusCode(int code){
         }
 
         for (int i = 0; i < playerCount; ++i)
-            qDebug() << playerName[i] << "\t" << playerColor[i] << "addrRead:" << addrRead[i];
+            qDebug() << playerName[i]
+                        << "playerColor:" << playerColor[i]
+                        << "isSpectatorPlayer:" << isSpectatorPlayer[i]
+                        << "addrRead:" << addrRead[i];
         for (int i = 0; i < playerCount; ++i){
             if (!isSpectatorPlayer[i])//不是观察者则显示名字
             {
@@ -342,7 +346,7 @@ void RA2Mem::switchStatusCode(int code){
             if (gameProcess == NULL)
                 qDebug() << "Open Process Failed";;
 
-            for (int i = 0, j = 0, k = 0; i < playerCount; i++)
+            for (int i = 0, j = 0; i < playerCount; i++)
             {
                 int soliderFactoryAddress, soliderFactoryCount;
                 int solidersAddress, solidersCount;
@@ -354,22 +358,13 @@ void RA2Mem::switchStatusCode(int code){
                 int warFactoryAddress, warFactoryCount;
                 int isAddressValid;
 
-                //0.存在一个真实的观察者需要被跳过，其他的观察者都是占位的
-                //1.如果本机是观察者 不会占位
-                //2.如果全场只有一个观察者，这个观察者不会占位
-                //？3.如果包括自己有两个及以上的观察者，符合1，自己不会占位
-                //？4.如果除了自己有两个以上的观察者，只有一个不会占位
-                if ( (isSpectatorPlayer[i] == 1 && playerName[i] == localName) || (1 == spectatorCount))
-                    k = 1;
-                //i代表第几个玩家 j代表经过了多少个不是观察者的玩家
-                if (!isSpectatorPlayer[i])
-                {
-                    qDebug() << "playerName" << playerName[i] << "no spectator";
-                    qDebug() << "i: " << i << "\t(i-k):j = " << i-k << j ;
 
-                    int playerAddress = readMemory(gameProcess, 0x884b94 + (i - k) * 4);
-                    int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + (i - k) * 4, 0x557c);
-                    int playerTankAddress = readMemory(gameProcess, 0x884b94 + (i - k) * 4, 0x5568);
+                if (-1 != addrRead[i] && 0 == isSpectatorPlayer[i])
+                {
+                    qDebug() << "playerName" << playerName[i];
+                    int playerAddress = readMemory(gameProcess, 0x884b94 + addrRead[i] * 4);
+                    int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + addrRead[i] * 4, 0x557c);
+                    int playerTankAddress = readMemory(gameProcess, 0x884b94 + addrRead[i] * 4, 0x5568);
 
                     if(1 == playerCount) { // offline
                         playerAddress = readMemory(gameProcess, 0xA8022C, i * 4);
