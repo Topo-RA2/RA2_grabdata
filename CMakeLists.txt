@@ -17,6 +17,9 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets WebEngineWidgets WebEngine
 set(PROJECT_SOURCES
         main.cpp
         ra2mem.ui
+        constant.h
+        echart.h echart.cpp
+        player.h player.cpp
         ra2mem.h ra2mem.cpp
         config.h config.cpp
         resource.qrc
