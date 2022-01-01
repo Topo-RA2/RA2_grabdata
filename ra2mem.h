@@ -3,27 +3,31 @@
 #include <QMap>
 #include <QFile>
 #include <QPair>
+#include <QList>
 #include <QtMath>
 #include <QDebug>
 #include <QTimer>
 #include <QWidget>
 #include <QDateTime>
+#include <QJsonArray>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QVariantMap>
+#include <QJsonValue>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonParseError>
 #include <QtWebEngineWidgets/QWebEngineView>
 #include <QResizeEvent>
 
 #include <qt_windows.h>
 #include <psapi.h>
-#include <stdarg.h>
 
 #include "config.h"
-#include "constant.h"
-#include "player.h"
-#include "echart.h"
 
-enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
+const int CLASS = 8;
+const int NUM = 1500;
+const int PLAYERNUM = 8;
 
 namespace Ui {
 class RA2Mem;
@@ -41,6 +45,7 @@ signals:
 
 private slots:
     void on_comboBox_currentIndexChanged(int index);
+
     void on_pushButton_clicked();
     void onResizeEcharts();
 
@@ -50,34 +55,48 @@ protected:
 private:
     Ui::RA2Mem *ui;
     bool echartIsLoaded;
-    QTimer *checkTimer, *checkTimer2;
 
 public:
+    enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
+
     DWORD PID = 0;
-    int gameStatus;                     //游戏状态
-    int elaspedTime;                    //游戏启动时间（每次进timer+1）
-    QString qGameFile;                  //保存游戏运行的文件路径
-    QFile* gameData;                    //保存游戏数据
+    QTimer* checkTimer;
+    QTimer* checkTimer2;
+    int gameStatus;
+    int elaspedTime;
+    QString qGameFile;//保存游戏运行的文件路径
+    QFile* gameData;//保存游戏数据
 
-    Player m_player[8];
-    QString localName;                  //本机name
-    QString playerName[PLAYERNUM];      //玩家name数组
-    int playerCount = 0;                //A:总玩家数
-    int battlePlayerCnt = 0;            //B:除去观战的玩家数
-    int spectatorCount = 0;             //C = A - B
-    int playerColor[PLAYERNUM] = { 0 }; //玩家颜色数组
-    int playerCountry[PLAYERNUM];       //玩家国家数组
+    QString playerName[PLAYERNUM];
+    int playerCount = 0;
+    int battlePlayerCnt = 0;
+    int playerColor[PLAYERNUM] = { 0 };
+    int playerCountry[PLAYERNUM];
+    int isSpectatorPlayer[PLAYERNUM];
+    int spectatorCount = 0;
+    int addrRead[PLAYERNUM];
+    QList<QString> playerNameList;
+    QList<int> playerColorList;
     QList<QString> otherlist = { "other1","other2", "other3", "other4", "other5", "other6", "other7", };
+    QString localName;
 
-    int dataArray[PLAYERNUM][CLASS][TIME_LIMIT_1];
-
-
+    int dataArray[PLAYERNUM][CLASS][NUM];
+    QMap<int,QString> color2RGB;
+    QJsonDocument jsonDoc;
+    QJsonArray playerlistArray;
+    QJsonArray totalFrame;
+    QList<QPair<QString,QString>> schema;
     int web_index = 0;
 
     void startTimer();
     void switchStatusCode(int);
-    void reset_all_tmp_data();
-
-    DWORD readMemory(HANDLE, int, ...);
+    QJsonArray generateEchartSchema();
+    QJsonArray generateEchartOptionSeries(int);
+    QJsonObject generateEchartOptionLegend();
+    QJsonObject generateDataJson();
+    DWORD readMemory(HANDLE, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD, DWORD, DWORD, DWORD);
 
 };
