@@ -6,12 +6,8 @@ RA2Mem::RA2Mem(QWidget *parent) :
     ui(new Ui::RA2Mem)
 {
     gameStatus = 0;
-    elaspedTime = 0;
-    battlePlayerCnt = 0;
-    for(int t = 0; t < PLAYERNUM; ++t){
-        for(int tt = 0; tt < TIME_LIMIT_1; ++tt)
-            dataArray[t][0][tt] = -1;
-    }
+
+    reset_all_tmp_data();
 
     ui->setupUi(this);
     echartIsLoaded = false;
@@ -163,22 +159,13 @@ void RA2Mem::switchStatusCode(int code) {
         ui->webview1->page()->runJavaScript(js);
         Config ini(qGameFile + "\\spawn.ini");
 
-        m_player[0].set_name(ini.Get("Settings", "Name").toString());
-        localName = m_player[0].get_name();
-        m_player[0].set_color(ini.Get("Settings", "Color").toInt());
-        m_player[0].set_side(ini.Get("Settings", "Side").toInt());
-        if (ini.Get("Settings", "IsSpectator") == "True") { //是观察者
-            m_player[0].set_ob(1);
-            spectatorCount++;
-        }
-
         playerCount = ini.Get("Settings", "PlayerCount").toInt();
-        for (int i = 1; i < playerCount; i++) {
-
-            m_player[i].set_name(ini.Get(otherlist.at(i - 1), "Name").toString());
-            m_player[i].set_color(ini.Get(otherlist.at(i - 1), "Color").toInt());
-            m_player[i].set_side(ini.Get(otherlist.at(i - 1), "Side").toInt());
-            if (ini.Get(otherlist.at(i - 1), "IsSpectator") == "True") { //是观察者
+        for (int i = 0; i < playerCount; ++i) {
+            player_id_vec.emplace_back(i);
+            m_player[i].set_name(   ini.Get(fieldlist.at(i), "Name").   toString());
+            m_player[i].set_color(  ini.Get(fieldlist.at(i), "Color").  toInt());
+            m_player[i].set_side(   ini.Get(fieldlist.at(i), "Side").   toInt());
+            if (ini.Get(fieldlist.at(i), "IsSpectator") == "True") { //是观察者
                 m_player[i].set_ob(1);
                 spectatorCount++;
             }
@@ -186,17 +173,17 @@ void RA2Mem::switchStatusCode(int code) {
                 m_player[i].set_ob(0);
 
         }
+        localName = m_player[0].get_name();
         std::sort(m_player, m_player + playerCount);//排序数组从小到大
 
         for (int i = 0; i < playerCount; ++i)
-            qDebug()    << "playerName:"     << m_player[i].get_name()
+            qDebug()    << "playerName:"        << m_player[i].get_name()
                         << "playerColor:"       << m_player[i].get_color()
                         << "isSpectatorPlayer:" << m_player[i].get_ob();
         emit EmitStatusCode(2);
     }
 
-    else if(code == 2) // read memory
-    {
+    else if(code == 2) { // read memory
         //准备修改文件名为当前时间
         QString currentDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm");
         gameData = new QFile(currentDate + ".json");
@@ -223,17 +210,28 @@ void RA2Mem::switchStatusCode(int code) {
         */
 
         connect(checkTimer2, &QTimer::timeout, [&]()->void {
-            HANDLE gameProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+            gameProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
             if (gameProcess == NULL)
                 qDebug() << "Open Process Failed";
-            //用于判断是否是观战
-            if (elaspedTime <= 80) {
 
+            //echart.data_queue.push(tmp);
+            if (elaspedTime < 80) {
+                for (int i: player_id_vec) {
+                    echart.data_mtx.lock();
+                    echart.data_queue.push( get_one_player_data(i) );
+                    echart.data_mtx.unlock();
+                }
+            }
+            else if (80 == elaspedTime) {
+                //battle_player_id_vec =
             }
             else {
-
+                for (int i: battle_player_id_vec) {
+                    echart.data_mtx.lock();
+                    echart.data_queue.push( get_one_player_data(i) );
+                    echart.data_mtx.unlock();
+                }
             }
-
             elaspedTime++;
         });
     }
@@ -271,12 +269,138 @@ void RA2Mem::switchStatusCode(int code) {
     }
 }
 
+struct data_struct RA2Mem::get_one_player_data(int i) {
+
+    int soliderFactoryAddress, soliderFactoryCount;
+    int solidersAddress, solidersCount;
+    int dogAddress, dogCount;
+    int minerAddress, minerCount;
+    int cashAddress, cashCount;
+    int consumeAddress, consumeCount;
+    int mainTankAddress, mainTankCount;
+    int warFactoryAddress, warFactoryCount;
+    int isAddressValid;
+
+    qDebug() << "playerName" << playerName[i];
+    int playerAddress = readMemory(gameProcess, 0x884b94 + i * 4);
+    int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x557c);
+    int playerTankAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x5568);
+
+    if(1 == playerCount) { // offline
+        playerAddress = readMemory(gameProcess, 0xA8022C, i * 4);
+        playerInfantryAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x557c);
+        playerTankAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x5568);
+    }
+
+    //cash
+    cashAddress = playerAddress;
+    cashAddress += 0x30c;
+    isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(cashAddress), &cashCount, sizeof(minerAddress), 0);
+    if (isAddressValid == 0)
+        cashCount = 0;
+    qDebug() << "cashCount: " << cashCount << "elaspedTime: " << elaspedTime;
+    if((elaspedTime <= 5) && (cashCount > 30000 || cashCount <= 0)) {
+        cashCount = -1;
+    }
+    consumeAddress = playerAddress;
+    consumeAddress += 0x2DC;
+    isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(consumeAddress), &consumeCount, sizeof(consumeAddress), 0);
+    if (isAddressValid == 0)
+        consumeCount = 0;
+
+    if (playerCountry[i] >= 5) {
+        //动员兵
+        solidersAddress = playerInfantryAddress + 4;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount, sizeof(solidersAddress), 0);
+        if (isAddressValid == 0)
+            solidersCount = 0;
+
+        //狗狗
+        dogAddress = playerInfantryAddress + 0x24;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount, sizeof(dogAddress), 0);
+        if (isAddressValid == 0)
+            dogCount = 0;
+
+        //矿车
+        minerAddress = playerTankAddress + 4;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount, sizeof(minerAddress), 0);
+        if (isAddressValid == 0)
+            minerCount = 0;
+
+        //犀牛坦克
+        mainTankAddress = playerTankAddress + 0xc;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount, sizeof(mainTankAddress), 0);
+        if (isAddressValid == 0)
+            mainTankCount = 0;
+
+        //重工
+        warFactoryAddress = playerAddress + 0x5380;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(warFactoryAddress), &warFactoryCount, sizeof(warFactoryCount), 0);
+        if (isAddressValid == 0)
+            warFactoryCount = 0;
+
+        //检测兵营是否存在
+        soliderFactoryAddress = playerAddress + 0x537c;
+        ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
+    }
+    else {
+        //盟军
+        //大兵
+        solidersAddress = playerInfantryAddress + 0;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount, sizeof(solidersAddress), 0);
+        if (isAddressValid == 0)
+            solidersCount = 0;
+
+        //狗狗
+        dogAddress = playerInfantryAddress + 0x70;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount, sizeof(dogAddress), 0);
+        if (isAddressValid == 0)
+            dogCount = 0;
+
+        //矿车
+        minerAddress = playerTankAddress + 0x84;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount, sizeof(minerAddress), 0);
+        if (isAddressValid == 0)
+            minerCount = 0;
+
+        //主战坦克
+        mainTankAddress = playerTankAddress + 0x24;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount, sizeof(mainTankAddress), 0);
+        if (isAddressValid == 0)
+            mainTankCount = 0;
+
+        //重工
+        warFactoryAddress = playerAddress + 0x5380;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(warFactoryAddress), &warFactoryCount, sizeof(warFactoryCount), 0);
+        if (isAddressValid == 0)
+            warFactoryCount = 0;
+
+        //检测兵营是否存在
+        soliderFactoryAddress = playerAddress + 0x537c;
+        ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
+
+    }//else end
+    struct data_struct tmp = {
+        -1,
+        elaspedTime,
+        consumeCount,
+        solidersCount,
+        dogCount,
+        minerCount,
+        mainTankCount,
+        warFactoryCount,
+        soliderFactoryCount,
+        cashCount
+    };
+    return tmp;
+}
+
 void RA2Mem::reset_all_tmp_data() {
     elaspedTime = 0;
     battlePlayerCnt = 0;
     spectatorCount = 0;
-    for(int t = 0; t < PLAYERNUM; ++t){
-        for(int tt = 0; tt < TIME_LIMIT_1; ++tt)
-            dataArray[t][0][tt] = -1;
-    }
+    gameProcess = NULL;
+    player_id_vec.clear();
+    player_id_vec.shrink_to_fit();
+    echart.resetAllEchart();
 }

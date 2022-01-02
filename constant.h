@@ -10,6 +10,10 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
+#include <mutex>
+#include <queue>
+#include <thread>
+
 const int CLASS = 8;
 const int PLAYERNUM = 8;
 const int TIME_LIMIT_1 = 80;

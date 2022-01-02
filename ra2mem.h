@@ -23,7 +23,7 @@
 #include "player.h"
 #include "echart.h"
 
-enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
+//enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
 
 namespace Ui {
 class RA2Mem;
@@ -58,8 +58,9 @@ public:
     int elaspedTime;                    //游戏启动时间（每次进timer+1）
     QString qGameFile;                  //保存游戏运行的文件路径
     QFile* gameData;                    //保存游戏数据
+    HANDLE gameProcess;
 
-    Player m_player[8];
+    Player m_player[PLAYERNUM];
     QString localName;                  //本机name
     QString playerName[PLAYERNUM];      //玩家name数组
     int playerCount = 0;                //A:总玩家数
@@ -67,16 +68,17 @@ public:
     int spectatorCount = 0;             //C = A - B
     int playerColor[PLAYERNUM] = { 0 }; //玩家颜色数组
     int playerCountry[PLAYERNUM];       //玩家国家数组
-    QList<QString> otherlist = { "other1","other2", "other3", "other4", "other5", "other6", "other7", };
-
-    int dataArray[PLAYERNUM][CLASS][TIME_LIMIT_1];
-
+    QList<QString> fieldlist = { "Settings", "other1", "other2", "other3", "other4", "other5", "other6", "other7", };
+    std::vector<int> player_id_vec;
+    std::vector<int> battle_player_id_vec;
+    Echart echart;
 
     int web_index = 0;
 
     void startTimer();
     void switchStatusCode(int);
     void reset_all_tmp_data();
+    struct data_struct get_one_player_data(int);
 
     DWORD readMemory(HANDLE, int, ...);
 

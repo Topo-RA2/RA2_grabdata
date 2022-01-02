@@ -1,6 +1,9 @@
 ﻿#include "echart.h"
 
+std::thread rev_thread;
+
 Echart::Echart() {
+
     schema.append(qMakePair(QString::fromUtf8("date"),      QStringLiteral("s")));
     schema.append(qMakePair(QString::fromUtf8("consume"),   QStringLiteral("金钱消耗")));
     schema.append(qMakePair(QString::fromUtf8("soliders"),  QStringLiteral("大兵")));
@@ -28,10 +31,60 @@ Echart::Echart() {
     color2RGB[13] = "rgba(64,215,208,0.1)";//天蓝
     color2RGB[14] = "rgba(160,32,240,0.1)";//紫
     color2RGB[15] = "rgba(205,150,205,0.1)";//粉
+
+    rev_thread = revThread();
+    rev_thread.join();
+
 }
 Echart::~Echart() {
 
 }
+
+void Echart::revFunction() {
+    data_mtx.lock();
+    while (!data_queue.empty())
+    {
+        struct data_struct tmp = data_queue.front();
+        data_queue.pop();
+        //dataArray[tmp.id]
+    }
+    data_mtx.unlock();
+
+
+}
+
+std::thread Echart::revThread() {
+    return std::thread(&Echart::revFunction, this);
+}
+
+void Echart::judgeOb() {
+
+    int p_count = 0;
+    for(int _id = 0; _id < PLAYERNUM; ++_id) {
+        if(-1 != dataArray[_id][0][TIME_LIMIT_1/2])
+            ++p_count;
+    }
+    for(int _id = 0; _id < PLAYERNUM; ++_id) {
+        for(int _class = 0; _class < CLASS; ++_class) {
+            for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
+
+                dataArray[_id][_class][_time] =
+            }
+        }
+    }
+}
+
+void Echart::resetAllEchart() {
+    isJudge = 0;
+    for(int _id = 0; _id < PLAYERNUM; ++_id) {
+        for(int _class = 0; _class < CLASS; ++_class) {
+            for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
+                dataArray[_id][_class][_time] = -1;
+            }
+        }
+    }
+}
+
 QJsonArray Echart::generateEchartSchema() {
     /*
     QJsonArray schemaArray;
