@@ -33,7 +33,7 @@ Echart::Echart() {
     color2RGB[15] = "rgba(205,150,205,0.1)";//粉
 
     rev_thread = revThread();
-    rev_thread.join();
+    rev_thread.detach();
 
 }
 Echart::~Echart() {
@@ -41,41 +41,72 @@ Echart::~Echart() {
 }
 
 void Echart::revFunction() {
-    data_mtx.lock();
-    while (!data_queue.empty())
-    {
-        struct data_struct tmp = data_queue.front();
-        data_queue.pop();
-        //dataArray[tmp.id]
+    while(1) {
+        data_mtx.lock();
+        while (!data_queue.empty())
+        {
+            struct data_struct tmp = data_queue.front();
+            data_queue.pop();
+            //qDebug() << "tmp.id:" << tmp.id << "tmp.elaspedTime:" << tmp.elaspedTime << "tmp.soliderFactory:" << tmp.soliderFactory;
+            currTime = tmp.elaspedTime;
+            dataArray[tmp.id][consume][currTime]         = tmp.consume;
+            dataArray[tmp.id][soliders][currTime]        = tmp.soliders;
+            dataArray[tmp.id][dog][currTime]             = tmp.dog;
+            dataArray[tmp.id][miner][currTime]           = tmp.miner;
+            dataArray[tmp.id][mainTank][currTime]        = tmp.mainTank;
+            dataArray[tmp.id][warFactory][currTime]      = tmp.warFactory;
+            dataArray[tmp.id][soliderFactory][currTime]  = tmp.soliderFactory;
+            dataArray[tmp.id][cash][currTime]            = tmp.cash;
+        }
+        data_mtx.unlock();
+        _sleep(500);
     }
-    data_mtx.unlock();
-
-
 }
 
 std::thread Echart::revThread() {
     return std::thread(&Echart::revFunction, this);
 }
 
-void Echart::judgeOb() {
+std::vector<int> Echart::judgeOb() {
 
-    int p_count = 0;
-    for(int _id = 0; _id < PLAYERNUM; ++_id) {
-        if(-1 != dataArray[_id][0][TIME_LIMIT_1/2])
-            ++p_count;
-    }
-    for(int _id = 0; _id < PLAYERNUM; ++_id) {
-        for(int _class = 0; _class < CLASS; ++_class) {
-            for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
-
-                dataArray[_id][_class][_time] =
+    int tmp_array[8] = {0};
+    //前TIME_LIMIT_1s有兵营数据就算是正常player
+    for(int _id = 0; _id < playerCount; ++_id) {
+        for(int _time = 20; _time < TIME_LIMIT_1; ++_time) {
+            if(dataArray[_id][consume][TIME_LIMIT_1 - 1] >= 2000) {
+                qDebug() << "dataArray[_id][consume][TIME_LIMIT_1]: " << dataArray[_id][consume][TIME_LIMIT_1 - 10];
+                tmp_array[_id] = 1;
+                break;
             }
         }
     }
+    for(int i = 0; i < playerCount; ++i) {
+        qDebug() << "tmp_array:" << tmp_array[i];
+        if(1 == tmp_array[i]) {
+            battle_player_vec.emplace_back(i);
+            ++battlePlayerCnt;
+        }
+    }
+    return battle_player_vec;
+}
+int Echart::set_playerCount(int p) {
+    playerCount = p;
+    return 1;
+}
+int Echart::set_battlePlayerNameVec(std::vector<QString> n) {
+    battlePlayerNameVec = n;
+    return 1;
+}
+int Echart::set_battlePlayerColorVec(std::vector<int> c) {
+    battlePlayerColorVec = c;
+    return 1;
 }
 
 void Echart::resetAllEchart() {
     isJudge = 0;
+    playerCount = 0;
+    battlePlayerCnt = 0;
+    currTime = 0;
     for(int _id = 0; _id < PLAYERNUM; ++_id) {
         for(int _class = 0; _class < CLASS; ++_class) {
             for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
@@ -83,10 +114,16 @@ void Echart::resetAllEchart() {
             }
         }
     }
+    battlePlayerNameVec.clear();
+    battlePlayerNameVec.shrink_to_fit();
+    battlePlayerColorVec.clear();
+    battlePlayerColorVec.shrink_to_fit();
+    battle_player_vec.clear();
+    battle_player_vec.shrink_to_fit();
 }
 
 QJsonArray Echart::generateEchartSchema() {
-    /*
+
     QJsonArray schemaArray;
     for (int i = 0; i < schema.length(); ++i) {
         QJsonObject jsonObject;
@@ -96,37 +133,22 @@ QJsonArray Echart::generateEchartSchema() {
         schemaArray.append(jsonObject);
     }
     return schemaArray;
-    */
-    return QJsonArray{};
 }
 QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
-    /*
+
     QJsonArray seriesJsonArray;
 
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
-        //QJsonArray playerArray{QJsonArray{-2,0,0,0,0,0,0},QJsonArray{-1,0,0,0,0,0,0}};
         QJsonArray playerArray;
         QJsonArray playerMarkPoint;
         QJsonArray playerMarkArea;
         int init_miner_num = 0, init_factory_num = 0;
 
-        if(opt != 1)
-        {
+        if(opt != 1) {
             //int jumpFlag = 0;
-            for(int p_time = 0; p_time < elaspedTime; ++p_time){//每个时间
-                if(-1 == dataArray[p_cnt][cash][p_time])
-                    continue;
-
-                int sum = 0;
-                for(int p_class = 0; p_class < CLASS; ++p_class){
-                    sum += dataArray[p_cnt][p_class][p_time];
-                }
-                //if(sum >= 600000)
-                //    break;
-                if(p_time >= 10)
-                {
-                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 280)
-                    {
+            for(int p_time = 0; p_time < currTime; ++p_time) {//每个时间
+                if(p_time >= 10) {
+                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 280) {
                         playerMarkArea.append(QJsonArray{
                                                      QJsonObject{{"xAxis",p_time-1}},
                                                      QJsonObject{{"xAxis",p_time}}
@@ -167,7 +189,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
         }
 
         QJsonObject seriesJsonObj {
-            {"name", playerNameList[p_cnt]},
+            {"name", battlePlayerNameVec[p_cnt]},
             {"type", "line"},
             {"smooth", true},
             {"showSymbol", false},
@@ -178,7 +200,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                 }},
             {"itemStyle",QJsonObject{
                     {"normal", QJsonObject{
-                            {"color", color2RGB[playerColorList[p_cnt]]}
+                            {"color", color2RGB[battlePlayerColorVec[p_cnt]]}
                         }},
                     {"emphasis", QJsonObject{
                             {"color", "rgb(99,250,235)"},
@@ -195,7 +217,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                             }}}},
             {"markArea", QJsonObject{{"data", playerMarkArea},
                                      {"itemStyle",QJsonObject{
-                                                    {{"color", color2RGB[playerColorList[p_cnt] + 8]}}
+                                                    {{"color", color2RGB[battlePlayerColorVec[p_cnt] + 8]}}
                                                   }
                                      }
                          }
@@ -204,15 +226,13 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
         seriesJsonArray.append(seriesJsonObj);
     }
     return seriesJsonArray;
-    */
-    return QJsonArray{};
 }
 
 QJsonObject Echart::generateEchartOptionLegend() {
-/*
+
     QJsonArray legendDataArray;
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
-        legendDataArray.append(playerNameList[p_cnt]);
+        legendDataArray.append(battlePlayerNameVec[p_cnt]);
     }
     QJsonObject seriesJsonObj {
         {"icon", "rect"},
@@ -227,8 +247,31 @@ QJsonObject Echart::generateEchartOptionLegend() {
         {"data", legendDataArray},
     };
     return seriesJsonObj;
-    */
-    return QJsonObject{};
 }
 
+QJsonDocument Echart::generateAll() {
+    QJsonObject jsonDocObj;
+
+    for (int i = 0; i < battlePlayerCnt; ++i)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("Name", battlePlayerNameVec[i]);
+        jsonObject.insert("Color", battlePlayerColorVec[i]);
+        //jsonObject.insert("Country", playerCountry[i]);
+        playerlistArray.append(jsonObject);
+    }
+    jsonDocObj.insert("playerlist", playerlistArray);
+
+    QJsonArray schema = generateEchartSchema();
+    jsonDocObj.insert("schema", schema);
+
+    QJsonArray option_series = generateEchartOptionSeries(0);
+    jsonDocObj.insert("series", option_series);
+
+    QJsonObject option_legend = generateEchartOptionLegend();
+    jsonDocObj.insert("legend", option_legend);
+
+    jsonDoc.setObject(jsonDocObj);
+    return jsonDoc;
+}
 

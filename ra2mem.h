@@ -23,8 +23,6 @@
 #include "player.h"
 #include "echart.h"
 
-//enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
-
 namespace Ui {
 class RA2Mem;
 }
@@ -66,6 +64,8 @@ public:
     int playerCount = 0;                //A:总玩家数
     int battlePlayerCnt = 0;            //B:除去观战的玩家数
     int spectatorCount = 0;             //C = A - B
+    std::vector<QString> battlePlayerNameVec;   //游戏玩家name数组
+    std::vector<int> battlePlayerColorVec;      //游戏玩家color数组
     int playerColor[PLAYERNUM] = { 0 }; //玩家颜色数组
     int playerCountry[PLAYERNUM];       //玩家国家数组
     QList<QString> fieldlist = { "Settings", "other1", "other2", "other3", "other4", "other5", "other6", "other7", };

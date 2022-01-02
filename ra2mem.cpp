@@ -85,9 +85,11 @@ DWORD RA2Mem::readMemory(HANDLE pid, int num_args, ...)
     for(i = 0; i < num_args; ++i) {
         if(0 == i) {
             m = va_arg(args, DWORD);
+            //qDebug() << "0:M:" << m;
         } else {
             next = va_arg(args, DWORD);
             m = add_m + next;
+            //qDebug() << "1:M:" << m;
         }
         ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
     }
@@ -160,6 +162,7 @@ void RA2Mem::switchStatusCode(int code) {
         Config ini(qGameFile + "\\spawn.ini");
 
         playerCount = ini.Get("Settings", "PlayerCount").toInt();
+        echart.set_playerCount(playerCount);
         for (int i = 0; i < playerCount; ++i) {
             player_id_vec.emplace_back(i);
             m_player[i].set_name(   ini.Get(fieldlist.at(i), "Name").   toString());
@@ -176,10 +179,21 @@ void RA2Mem::switchStatusCode(int code) {
         localName = m_player[0].get_name();
         std::sort(m_player, m_player + playerCount);//排序数组从小到大
 
-        for (int i = 0; i < playerCount; ++i)
+        for (int i = 0; i < playerCount; ++i) {
+            if(0 == m_player[i].get_ob()) {
+                battlePlayerNameVec.emplace_back(m_player[i].get_name());
+                battlePlayerColorVec.emplace_back(m_player[i].get_color());
+            }
+
             qDebug()    << "playerName:"        << m_player[i].get_name()
                         << "playerColor:"       << m_player[i].get_color()
                         << "isSpectatorPlayer:" << m_player[i].get_ob();
+        }
+        //for(auto i : battlePlayerNameVec)
+        //   qDebug() << "battlePlayerNameVec:" << i;
+        echart.set_battlePlayerNameVec(battlePlayerNameVec);
+        echart.set_battlePlayerColorVec(battlePlayerColorVec);
+
         emit EmitStatusCode(2);
     }
 
@@ -194,39 +208,32 @@ void RA2Mem::switchStatusCode(int code) {
         }
         checkTimer2 = new QTimer;
         checkTimer2->start(1000);
-        /*
-        for (int i = 0; i < playerCount; ++i)
-        {
-            if (isSpectatorPlayer[i] != 1)
-            {
-                QJsonObject jsonObject;
-                jsonObject.insert("Name", playerName[i]);
-                jsonObject.insert("Color", playerColor[i]);
-                jsonObject.insert("Country", playerCountry[i]);
-                playerlistArray.append(jsonObject);
-                ++battlePlayerCnt;
-            }
-        }
-        */
 
         connect(checkTimer2, &QTimer::timeout, [&]()->void {
             gameProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
             if (gameProcess == NULL)
                 qDebug() << "Open Process Failed";
 
-            //echart.data_queue.push(tmp);
-            if (elaspedTime < 80) {
+            if (elaspedTime < TIME_LIMIT_1) {
                 for (int i: player_id_vec) {
                     echart.data_mtx.lock();
                     echart.data_queue.push( get_one_player_data(i) );
                     echart.data_mtx.unlock();
                 }
             }
-            else if (80 == elaspedTime) {
-                //battle_player_id_vec =
-            }
             else {
-                for (int i: battle_player_id_vec) {
+                if(TIME_LIMIT_1 == elaspedTime) {
+                    battle_player_id_vec = echart.judgeOb();
+                    int cnt = 0;
+                    for(int i = 0; i < playerCount; ++i)
+                        m_player[i].set_name("");
+                    if(battle_player_id_vec.size() == battlePlayerNameVec.size())
+                        for(int i : battle_player_id_vec) {
+                            m_player[i].set_name(battlePlayerNameVec[cnt++]);
+                        }
+                    qDebug() << "battle_player_id_vec:" << battle_player_id_vec;
+                }
+                for (int i : battle_player_id_vec) {
                     echart.data_mtx.lock();
                     echart.data_queue.push( get_one_player_data(i) );
                     echart.data_mtx.unlock();
@@ -243,29 +250,17 @@ void RA2Mem::switchStatusCode(int code) {
         qDebug() << "come in 0";
         checkTimer2->stop();
         ui->label_2->setText("generated");
-        /*
-        QJsonObject jsonDocObj;
-        jsonDocObj.insert("playerlist", playerlistArray);
 
-        QJsonArray schema = generateEchartSchema();
-        jsonDocObj.insert("schema", schema);
+        QJsonDocument tmp_jsonDoc = echart.generateAll();
 
-        QJsonArray option_series = generateEchartOptionSeries(0);
-        jsonDocObj.insert("series", option_series);
-
-        QJsonObject option_legend = generateEchartOptionLegend();
-        jsonDocObj.insert("legend", option_legend);
-
-        jsonDoc.setObject(jsonDocObj);
-        gameData->write(jsonDoc.toJson());
+        gameData->write(tmp_jsonDoc.toJson());
         gameData->close();
 
-        QString str = jsonDoc.toJson(QJsonDocument::Compact);
+        QString str = tmp_jsonDoc.toJson(QJsonDocument::Compact);
         str.replace(QRegExp("\""), "\\\"");
         QString js = QString("load_json(\"%1\");").arg(str);
 
         ui->webview1->page()->runJavaScript(js);
-        */
     }
 }
 
@@ -281,15 +276,14 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
     int warFactoryAddress, warFactoryCount;
     int isAddressValid;
 
-    qDebug() << "playerName" << playerName[i];
-    int playerAddress = readMemory(gameProcess, 0x884b94 + i * 4);
-    int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x557c);
-    int playerTankAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x5568);
-
+    qDebug() << "playerName:" << m_player[i].get_name();
+    int playerAddress = readMemory(gameProcess, 1, 0x884b94 + i * 4);
+    int playerInfantryAddress = readMemory(gameProcess, 2, 0x884b94 + i * 4, 0x557c);
+    int playerTankAddress = readMemory(gameProcess, 2, 0x884b94 + i * 4, 0x5568);
     if(1 == playerCount) { // offline
-        playerAddress = readMemory(gameProcess, 0xA8022C, i * 4);
-        playerInfantryAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x557c);
-        playerTankAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x5568);
+        playerAddress = readMemory(gameProcess, 2, 0xA8022C, i * 4);
+        playerInfantryAddress = readMemory(gameProcess, 3, 0xA8022C, i * 4, 0x557c);
+        playerTankAddress = readMemory(gameProcess, 3, 0xA8022C, i * 4, 0x5568);
     }
 
     //cash
@@ -298,7 +292,6 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
     isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(cashAddress), &cashCount, sizeof(minerAddress), 0);
     if (isAddressValid == 0)
         cashCount = 0;
-    qDebug() << "cashCount: " << cashCount << "elaspedTime: " << elaspedTime;
     if((elaspedTime <= 5) && (cashCount > 30000 || cashCount <= 0)) {
         cashCount = -1;
     }
@@ -307,8 +300,9 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
     isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(consumeAddress), &consumeCount, sizeof(consumeAddress), 0);
     if (isAddressValid == 0)
         consumeCount = 0;
+    qDebug() << "consumeCount: " << consumeCount << "elaspedTime: " << elaspedTime;
 
-    if (playerCountry[i] >= 5) {
+    if (m_player[i].get_side() >= 5) {
         //动员兵
         solidersAddress = playerInfantryAddress + 4;
         isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount, sizeof(solidersAddress), 0);
@@ -380,8 +374,10 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
         ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
 
     }//else end
+    qDebug() << "soliderFactoryCount: " << soliderFactoryCount;
+    qDebug() << "dogCount: " << dogCount;
     struct data_struct tmp = {
-        -1,
+        i,
         elaspedTime,
         consumeCount,
         solidersCount,
@@ -400,6 +396,10 @@ void RA2Mem::reset_all_tmp_data() {
     battlePlayerCnt = 0;
     spectatorCount = 0;
     gameProcess = NULL;
+    battlePlayerNameVec.clear();
+    battlePlayerNameVec.shrink_to_fit();
+    battlePlayerColorVec.clear();
+    battlePlayerColorVec.shrink_to_fit();
     player_id_vec.clear();
     player_id_vec.shrink_to_fit();
     echart.resetAllEchart();

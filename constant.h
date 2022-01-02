@@ -1,4 +1,4 @@
-#ifndef CONSTANT_H
+﻿#ifndef CONSTANT_H
 #define CONSTANT_H
 
 #include <QList>
@@ -16,7 +16,7 @@
 
 const int CLASS = 8;
 const int PLAYERNUM = 8;
-const int TIME_LIMIT_1 = 80;
+const int TIME_LIMIT_1 = 40;
 const int TIME_LIMIT_2 = 1500;
 
 #endif // CONSTANT_H
