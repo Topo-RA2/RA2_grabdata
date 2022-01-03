@@ -148,7 +148,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
             //int jumpFlag = 0;
             for(int p_time = 0; p_time < currTime; ++p_time) {//每个时间
                 if(p_time >= 10) {
-                    if(dataArray[p_cnt][cash][p_time] >= 0 && dataArray[p_cnt][cash][p_time] <= 280) {
+                    if(dataArray[battle_player_vec[p_cnt]][cash][p_time] >= 0 && dataArray[battle_player_vec[p_cnt]][cash][p_time] <= 280) {
                         playerMarkArea.append(QJsonArray{
                                                      QJsonObject{{"xAxis",p_time-1}},
                                                      QJsonObject{{"xAxis",p_time}}
@@ -160,27 +160,27 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                 frameArray.append(p_time);//把时间放进去
 
                 for(int p_class = 0; p_class < CLASS; ++p_class){//有什么单位
-                    if(dataArray[p_cnt][p_class][p_time] >= 3000000)
+                    if(dataArray[battle_player_vec[p_cnt]][p_class][p_time] >= 3000000)
                         frameArray.append(0);
                     else
-                        frameArray.append(dataArray[p_cnt][p_class][p_time]);
+                        frameArray.append(dataArray[battle_player_vec[p_cnt]][p_class][p_time]);
                 }
                 playerArray.append(frameArray);
 
                 QJsonObject miner_change, factory_change;
-                if(init_miner_num != dataArray[p_cnt][miner][p_time]){
+                if(init_miner_num != dataArray[battle_player_vec[p_cnt]][miner][p_time]){
 
-                    init_miner_num = dataArray[p_cnt][miner][p_time];
+                    init_miner_num = dataArray[battle_player_vec[p_cnt]][miner][p_time];
                     miner_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
+                                        QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
                     miner_change.insert("value",
                                         QStringLiteral("%1牛").arg(init_miner_num));
                     playerMarkPoint.append(miner_change);
                 }
-                if(init_factory_num != dataArray[p_cnt][warFactory][p_time]){
-                    init_factory_num = dataArray[p_cnt][warFactory][p_time];
+                if(init_factory_num != dataArray[battle_player_vec[p_cnt]][warFactory][p_time]){
+                    init_factory_num = dataArray[battle_player_vec[p_cnt]][warFactory][p_time];
                     factory_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[p_cnt][consume][p_time]+10});
+                                        QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
                     factory_change.insert("value",
                                         QStringLiteral("%1重").arg(init_factory_num));
                     playerMarkPoint.append(factory_change);
