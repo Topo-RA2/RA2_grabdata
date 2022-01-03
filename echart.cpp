@@ -10,6 +10,7 @@ Echart::Echart() {
     schema.append(qMakePair(QString::fromUtf8("dog"),       QStringLiteral("狗狗")));
     schema.append(qMakePair(QString::fromUtf8("miner"),     QStringLiteral("矿车")));
     schema.append(qMakePair(QString::fromUtf8("tank"),      QStringLiteral("坦克")));
+    schema.append(qMakePair(QString::fromUtf8("zz"),        QStringLiteral("蜘蛛")));
     schema.append(qMakePair(QString::fromUtf8("factory"),   QStringLiteral("重工")));
     schema.append(qMakePair(QString::fromUtf8("s_factory"), QStringLiteral("兵营")));
     schema.append(qMakePair(QString::fromUtf8("money"),     QStringLiteral("金钱剩余")));
@@ -54,6 +55,7 @@ void Echart::revFunction() {
             dataArray[tmp.id][dog][currTime]             = tmp.dog;
             dataArray[tmp.id][miner][currTime]           = tmp.miner;
             dataArray[tmp.id][mainTank][currTime]        = tmp.mainTank;
+            dataArray[tmp.id][zz][currTime]              = tmp.zz;
             dataArray[tmp.id][warFactory][currTime]      = tmp.warFactory;
             dataArray[tmp.id][soliderFactory][currTime]  = tmp.soliderFactory;
             dataArray[tmp.id][cash][currTime]            = tmp.cash;
@@ -70,10 +72,9 @@ std::thread Echart::revThread() {
 std::vector<int> Echart::judgeOb() {
 
     int tmp_array[8] = {0};
-    //前TIME_LIMIT_1s有兵营数据就算是正常player
     for(int _id = 0; _id < playerCount; ++_id) {
         for(int _time = 20; _time < TIME_LIMIT_1; ++_time) {
-            if(dataArray[_id][consume][TIME_LIMIT_1 - 1] >= 2000) {
+            if(dataArray[_id][consume][TIME_LIMIT_1 - 1] > 0) {
                 qDebug() << "dataArray[_id][consume][TIME_LIMIT_1]: " << dataArray[_id][consume][TIME_LIMIT_1 - 10];
                 tmp_array[_id] = 1;
                 break;
@@ -159,8 +160,9 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                 QJsonArray frameArray;
                 frameArray.append(p_time);//把时间放进去
 
-                for(int p_class = 0; p_class < CLASS; ++p_class){//有什么单位
-                    if(dataArray[battle_player_vec[p_cnt]][p_class][p_time] >= 3000000)
+                for(int p_class = 0; p_class < CLASS; ++p_class) {//有什么单位
+                    if(dataArray[battle_player_vec[p_cnt]][consume][p_time] == 0 &&
+                       dataArray[battle_player_vec[p_cnt]][p_class][p_time] >= 300000)
                         frameArray.append(0);
                     else
                         frameArray.append(dataArray[battle_player_vec[p_cnt]][p_class][p_time]);
@@ -231,8 +233,12 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
 QJsonObject Echart::generateEchartOptionLegend() {
 
     QJsonArray legendDataArray;
+    QJsonObject selectedObj;
+    selectedObj.insert("delta",true);
+    legendDataArray.append("delta");
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
         legendDataArray.append(battlePlayerNameVec[p_cnt]);
+        selectedObj.insert(battlePlayerNameVec[p_cnt],false);
     }
     QJsonObject seriesJsonObj {
         {"icon", "rect"},
@@ -245,6 +251,7 @@ QJsonObject Echart::generateEchartOptionLegend() {
                 {"color", "#F1F1F3"},
             }},
         {"data", legendDataArray},
+        {"selected", selectedObj}
     };
     return seriesJsonObj;
 }

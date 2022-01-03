@@ -42,7 +42,6 @@
            </property>
            <property name="font">
             <font>
-             <family>Adobe 黑体 Std R</family>
              <pointsize>11</pointsize>
             </font>
            </property>
@@ -53,7 +52,7 @@
            </item>
            <item>
             <property name="text">
-             <string>经济剩余</string>
+             <string>战斗单位</string>
             </property>
            </item>
           </widget>
@@ -87,7 +86,6 @@
            </property>
            <property name="font">
             <font>
-             <family>Adobe 黑体 Std R</family>
              <pointsize>11</pointsize>
             </font>
            </property>
@@ -166,7 +164,6 @@
          </property>
          <property name="font">
           <font>
-           <family>Adobe 黑体 Std R</family>
            <pointsize>18</pointsize>
           </font>
          </property>
@@ -204,7 +201,6 @@
          </property>
          <property name="font">
           <font>
-           <family>Adobe 黑体 Std R</family>
            <pointsize>18</pointsize>
           </font>
          </property>

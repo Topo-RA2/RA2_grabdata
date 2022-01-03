@@ -60,14 +60,11 @@ public:
 
     Player m_player[PLAYERNUM];
     QString localName;                  //本机name
-    QString playerName[PLAYERNUM];      //玩家name数组
     int playerCount = 0;                //A:总玩家数
     int battlePlayerCnt = 0;            //B:除去观战的玩家数
     int spectatorCount = 0;             //C = A - B
     std::vector<QString> battlePlayerNameVec;   //游戏玩家name数组
     std::vector<int> battlePlayerColorVec;      //游戏玩家color数组
-    int playerColor[PLAYERNUM] = { 0 }; //玩家颜色数组
-    int playerCountry[PLAYERNUM];       //玩家国家数组
     QList<QString> fieldlist = { "Settings", "other1", "other2", "other3", "other4", "other5", "other6", "other7", };
     std::vector<int> player_id_vec;
     std::vector<int> battle_player_id_vec;
@@ -80,6 +77,9 @@ public:
     void reset_all_tmp_data();
     struct data_struct get_one_player_data(int);
 
-    DWORD readMemory(HANDLE, int, ...);
+    DWORD readMemory(HANDLE, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD, DWORD);
+    DWORD readMemory(HANDLE, DWORD, DWORD, DWORD, DWORD, DWORD);
 
 };

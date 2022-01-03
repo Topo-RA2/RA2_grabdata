@@ -74,26 +74,45 @@ void RA2Mem::on_pushButton_clicked()
         file.close();
     }
 }
-
-DWORD RA2Mem::readMemory(HANDLE pid, int num_args, ...)
+DWORD RA2Mem::readMemory(HANDLE pid, DWORD m)
 {
-    DWORD m, next, add_m;
-    va_list args;
-    int i;
+    DWORD add_m;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    return add_m;
+}
 
-    va_start(args, num_args);
-    for(i = 0; i < num_args; ++i) {
-        if(0 == i) {
-            m = va_arg(args, DWORD);
-            //qDebug() << "0:M:" << m;
-        } else {
-            next = va_arg(args, DWORD);
-            m = add_m + next;
-            //qDebug() << "1:M:" << m;
-        }
-        ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
-    }
-    va_end(args);
+DWORD RA2Mem::readMemory(HANDLE pid, DWORD m, DWORD n)
+{
+    DWORD add_m;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + n;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    return add_m;
+}
+
+DWORD RA2Mem::readMemory(HANDLE pid, DWORD m, DWORD n, DWORD o)
+{
+    DWORD add_m;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + n;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + o;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    return add_m;
+}
+
+DWORD RA2Mem::readMemory(HANDLE pid, DWORD m, DWORD n, DWORD o, DWORD p, DWORD q)
+{
+    DWORD add_m;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + n;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + o;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + p;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
+    m = add_m + q;
+    ReadProcessMemory(pid, (void *)m, &add_m, 4, 0);
     return add_m;
 }
 
@@ -214,6 +233,7 @@ void RA2Mem::switchStatusCode(int code) {
             if (gameProcess == NULL)
                 qDebug() << "Open Process Failed";
 
+
             if (elaspedTime < TIME_LIMIT_1) {
                 for (int i: player_id_vec) {
                     echart.data_mtx.lock();
@@ -266,24 +286,27 @@ void RA2Mem::switchStatusCode(int code) {
 
 struct data_struct RA2Mem::get_one_player_data(int i) {
 
-    int soliderFactoryAddress, soliderFactoryCount;
-    int solidersAddress, solidersCount;
-    int dogAddress, dogCount;
-    int minerAddress, minerCount;
-    int cashAddress, cashCount;
-    int consumeAddress, consumeCount;
-    int mainTankAddress, mainTankCount;
-    int warFactoryAddress, warFactoryCount;
+    int soliderFactoryAddress,  soliderFactoryCount;
+    int warFactoryAddress,      warFactoryCount;
+    int cashAddress,            cashCount;
+    int consumeAddress,         consumeCount;
+
+    int solidersAddress,        solidersCount1, solidersCount2, solidersCnt;
+    int dogAddress,             dogCount1, dogCount2, dogCnt;
+    int minerAddress,           minerCount1, minerCount2, minerCnt;
+    int mainTankAddress,        mainTankCount1, mainTankCount2, mainTankCnt;
+    int zzAddress,              zzCount = 0;
+
     int isAddressValid;
 
     qDebug() << "playerName:" << m_player[i].get_name();
-    int playerAddress = readMemory(gameProcess, 1, 0x884b94 + i * 4);
-    int playerInfantryAddress = readMemory(gameProcess, 2, 0x884b94 + i * 4, 0x557c);
-    int playerTankAddress = readMemory(gameProcess, 2, 0x884b94 + i * 4, 0x5568);
+    int playerAddress = readMemory(gameProcess, 0x884b94 + i * 4);
+    int playerInfantryAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x557c);
+    int playerTankAddress = readMemory(gameProcess, 0x884b94 + i * 4, 0x5568);
     if(1 == playerCount) { // offline
-        playerAddress = readMemory(gameProcess, 2, 0xA8022C, i * 4);
-        playerInfantryAddress = readMemory(gameProcess, 3, 0xA8022C, i * 4, 0x557c);
-        playerTankAddress = readMemory(gameProcess, 3, 0xA8022C, i * 4, 0x5568);
+        playerAddress = readMemory(gameProcess, 0xA8022C, i * 4);
+        playerInfantryAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x557c);
+        playerTankAddress = readMemory(gameProcess, 0xA8022C, i * 4, 0x5568);
     }
 
     //cash
@@ -300,32 +323,59 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
     isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(consumeAddress), &consumeCount, sizeof(consumeAddress), 0);
     if (isAddressValid == 0)
         consumeCount = 0;
-    qDebug() << "consumeCount: " << consumeCount << "elaspedTime: " << elaspedTime;
+    qDebug() << "m_player[i].get_side():" << m_player[i].get_side() << "consumeCount: " << consumeCount << "elaspedTime: " << elaspedTime;
 
-    if (m_player[i].get_side() >= 5) {
-        //动员兵
+    {
+        //动员兵、美国大兵
         solidersAddress = playerInfantryAddress + 4;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount, sizeof(solidersAddress), 0);
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount1, sizeof(solidersAddress), 0);
         if (isAddressValid == 0)
-            solidersCount = 0;
+            solidersCount1 = 0;
+        solidersAddress = playerInfantryAddress + 0;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount2, sizeof(solidersAddress), 0);
+        if (isAddressValid == 0)
+            solidersCount2 = 0;
 
         //狗狗
         dogAddress = playerInfantryAddress + 0x24;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount, sizeof(dogAddress), 0);
-        if (isAddressValid == 0)
-            dogCount = 0;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount1, sizeof(dogAddress), 0);
+        if (isAddressValid == 0 || dogCount1 > 150)
+            dogCount1 = 0;
+        dogAddress = playerInfantryAddress + 0x70;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount2, sizeof(dogAddress), 0);
+        if (isAddressValid == 0 || dogCount2 > 150)
+            dogCount2 = 0;
 
         //矿车
         minerAddress = playerTankAddress + 4;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount, sizeof(minerAddress), 0);
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount1, sizeof(minerAddress), 0);
         if (isAddressValid == 0)
-            minerCount = 0;
+            minerCount1 = 0;
+        minerAddress = playerTankAddress + 0x84;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount2, sizeof(minerAddress), 0);
+        if (isAddressValid == 0)
+            minerCount2 = 0;
 
-        //犀牛坦克
+        //犀牛坦克、灰熊坦克
         mainTankAddress = playerTankAddress + 0xc;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount, sizeof(mainTankAddress), 0);
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount1, sizeof(mainTankAddress), 0);
         if (isAddressValid == 0)
-            mainTankCount = 0;
+            mainTankCount1 = 0;
+        mainTankAddress = playerTankAddress + 0x24;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount2, sizeof(mainTankAddress), 0);
+        if (isAddressValid == 0)
+            mainTankCount2 = 0;
+
+        solidersCnt = solidersCount1 + solidersCount1;
+        dogCnt = dogCount1 + dogCount2;
+        minerCnt = minerCount1 + minerCount2;
+        mainTankCnt = mainTankCount1 + mainTankCount2;
+
+        //zz
+        zzAddress = playerTankAddress + 0x40;
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(zzAddress), &zzCount, sizeof(zzAddress), 0);
+        if (isAddressValid == 0)
+            zzCount = 0;
 
         //重工
         warFactoryAddress = playerAddress + 0x5380;
@@ -337,53 +387,16 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
         soliderFactoryAddress = playerAddress + 0x537c;
         ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
     }
-    else {
-        //盟军
-        //大兵
-        solidersAddress = playerInfantryAddress + 0;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(solidersAddress), &solidersCount, sizeof(solidersAddress), 0);
-        if (isAddressValid == 0)
-            solidersCount = 0;
-
-        //狗狗
-        dogAddress = playerInfantryAddress + 0x70;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(dogAddress), &dogCount, sizeof(dogAddress), 0);
-        if (isAddressValid == 0)
-            dogCount = 0;
-
-        //矿车
-        minerAddress = playerTankAddress + 0x84;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(minerAddress), &minerCount, sizeof(minerAddress), 0);
-        if (isAddressValid == 0)
-            minerCount = 0;
-
-        //主战坦克
-        mainTankAddress = playerTankAddress + 0x24;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(mainTankAddress), &mainTankCount, sizeof(mainTankAddress), 0);
-        if (isAddressValid == 0)
-            mainTankCount = 0;
-
-        //重工
-        warFactoryAddress = playerAddress + 0x5380;
-        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(warFactoryAddress), &warFactoryCount, sizeof(warFactoryCount), 0);
-        if (isAddressValid == 0)
-            warFactoryCount = 0;
-
-        //检测兵营是否存在
-        soliderFactoryAddress = playerAddress + 0x537c;
-        ReadProcessMemory(gameProcess, (LPCVOID)(soliderFactoryAddress), &soliderFactoryCount, sizeof(soliderFactoryCount), 0);
-
-    }//else end
-    qDebug() << "soliderFactoryCount: " << soliderFactoryCount;
-    qDebug() << "dogCount: " << dogCount;
+    qDebug() << "soliderFactoryCount: " << soliderFactoryCount << "dogCnt:" << dogCnt<< "minerCnt:" << minerCnt << "mainTankCnt: " << mainTankCnt;
     struct data_struct tmp = {
         i,
         elaspedTime,
         consumeCount,
-        solidersCount,
-        dogCount,
-        minerCount,
-        mainTankCount,
+        solidersCnt,
+        dogCnt,
+        minerCnt,
+        mainTankCnt,
+        zzCount,
         warFactoryCount,
         soliderFactoryCount,
         cashCount

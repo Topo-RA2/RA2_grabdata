@@ -11,11 +11,12 @@ struct data_struct{
     int dog;
     int miner;
     int mainTank;
+    int zz;
     int warFactory;
     int soliderFactory;
     int cash;
 };
-enum dataArraySet {consume,soliders,dog,miner,mainTank,warFactory,soliderFactory,cash};
+enum dataArraySet {consume,soliders,dog,miner,mainTank,zz,warFactory,soliderFactory,cash};
 
 class Echart{
 private:

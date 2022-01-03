@@ -14,9 +14,9 @@
 #include <queue>
 #include <thread>
 
-const int CLASS = 8;
+const int CLASS = 9;
 const int PLAYERNUM = 8;
-const int TIME_LIMIT_1 = 40;
+const int TIME_LIMIT_1 = 50;
 const int TIME_LIMIT_2 = 1500;
 
 #endif // CONSTANT_H
