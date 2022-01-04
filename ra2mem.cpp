@@ -59,10 +59,15 @@ void RA2Mem::on_pushButton_clicked()
         if ( !jsonDocument.isNull() && jsonParserError.error == QJsonParseError::NoError ) {
             ui->label_2->setText("json parser success");
             //TODO:内容检查
+
+            //reset
+            QString reset_js = QString("reset_echart();");
+            ui->webview1->page()->runJavaScript(reset_js);
+
             QString str = jsonDocument.toJson(QJsonDocument::Compact);
             str.replace(QRegExp("\""), "\\\"");
-            QString js = QString("load_json(\"%1\");").arg(str);
-            ui->webview1->page()->runJavaScript(js);
+            QString load_js = QString("load_json(\"%1\");").arg(str);
+            ui->webview1->page()->runJavaScript(load_js);
         }
         file.close();
     }
@@ -168,8 +173,8 @@ void RA2Mem::switchStatusCode(int code) {
         reset_all_tmp_data();
 
         ui->pushButton->setDisabled(true);
-        QString js = QString("reset_echart();");
-        ui->webview1->page()->runJavaScript(js);
+        QString reset_js = QString("reset_echart();");
+        ui->webview1->page()->runJavaScript(reset_js);
         Config ini(qGameFile + "\\spawn.ini");
 
         playerCount = ini.Get("Settings", "PlayerCount").toInt();
