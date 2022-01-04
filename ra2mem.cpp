@@ -15,7 +15,8 @@ RA2Mem::RA2Mem(QWidget *parent) :
     qsrand(QDateTime::currentDateTimeUtc().toTime_t());
 
     connect(ui->webview1, SIGNAL(loadFinished(bool)), this, SLOT(onResizeEcharts()));//完成加载
-    on_comboBox_currentIndexChanged(0);
+    QString url = QString("qrc:/htmlEcharts/view1.html");
+    ui->webview1->load(QUrl(url));
 
     startTimer();
 }
@@ -39,14 +40,6 @@ void RA2Mem::resizeEvent(QResizeEvent *event)
 {
     if(echartIsLoaded)
         onResizeEcharts();
-}
-
-
-void RA2Mem::on_comboBox_currentIndexChanged(int index)
-{
-    web_index = index;
-    QString url = QString("qrc:/htmlEcharts/view%1.html").arg(index+1);
-    ui->webview1->load(QUrl(url));
 }
 
 void RA2Mem::on_pushButton_clicked()
@@ -175,7 +168,6 @@ void RA2Mem::switchStatusCode(int code) {
         reset_all_tmp_data();
 
         ui->pushButton->setDisabled(true);
-        ui->comboBox->setDisabled(true);
         QString js = QString("reset_echart();");
         ui->webview1->page()->runJavaScript(js);
         Config ini(qGameFile + "\\spawn.ini");
@@ -266,7 +258,6 @@ void RA2Mem::switchStatusCode(int code) {
     else if(code == 0)//没有游戏
     {
         ui->pushButton->setEnabled(true);
-        ui->comboBox->setEnabled(true);
         qDebug() << "come in 0";
         checkTimer2->stop();
         ui->label_2->setText("generated");

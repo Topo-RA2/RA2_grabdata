@@ -38,7 +38,6 @@ signals:
     void EmitStatusCode(int);
 
 private slots:
-    void on_comboBox_currentIndexChanged(int index);
     void on_pushButton_clicked();
     void onResizeEcharts();
 
@@ -69,8 +68,6 @@ public:
     std::vector<int> player_id_vec;
     std::vector<int> battle_player_id_vec;
     Echart echart;
-
-    int web_index = 0;
 
     void startTimer();
     void switchStatusCode(int);

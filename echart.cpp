@@ -234,11 +234,11 @@ QJsonObject Echart::generateEchartOptionLegend() {
 
     QJsonArray legendDataArray;
     QJsonObject selectedObj;
-    selectedObj.insert("delta",true);
-    legendDataArray.append("delta");
+    //selectedObj.insert("delta",true);
+    //legendDataArray.append("delta");
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
         legendDataArray.append(battlePlayerNameVec[p_cnt]);
-        selectedObj.insert(battlePlayerNameVec[p_cnt],false);
+        //selectedObj.insert(battlePlayerNameVec[p_cnt],false);
     }
     QJsonObject seriesJsonObj {
         {"icon", "rect"},

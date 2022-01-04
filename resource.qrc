@@ -2,6 +2,5 @@
     <qresource prefix="/">
         <file>htmlEcharts/echarts.min.js</file>
         <file>htmlEcharts/view1.html</file>
-        <file>htmlEcharts/view2.html</file>
     </qresource>
 </RCC>
