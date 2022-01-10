@@ -23,6 +23,9 @@ RA2Mem::RA2Mem(QWidget *parent) :
 RA2Mem::~RA2Mem()
 {
     delete ui;
+    delete checkTimer;
+    delete checkTimer2;
+    delete gameData;
 }
 void RA2Mem::onResizeEcharts()
 {
