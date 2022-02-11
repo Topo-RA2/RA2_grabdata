@@ -247,9 +247,13 @@ void RA2Mem::switchStatusCode(int code) {
                 return;
             if(elaspedTime < TIME_LIMIT_1) {
                 for (int i: player_id_vec) {
-                    echart.data_mtx.lock();
-                    echart.data_queue.push( get_one_player_data(i) );
-                    echart.data_mtx.unlock();
+                    struct data_struct tmp = get_one_player_data(i);
+                    if(lastGameTime[i] > 0) // 游戏经过读条后开始了
+                    {
+                        echart.data_mtx.lock();
+                        echart.data_queue.push(tmp);
+                        echart.data_mtx.unlock();
+                    }
                 }
             }
             else {
@@ -270,9 +274,13 @@ void RA2Mem::switchStatusCode(int code) {
                         isGameOver = true;
                         break;
                     }
-                    echart.data_mtx.lock();
-                    echart.data_queue.push( get_one_player_data(i) );
-                    echart.data_mtx.unlock();
+                    struct data_struct tmp = get_one_player_data(i);
+                    if(lastGameTime[i] > 0) // 游戏经过读条后开始了
+                    {
+                        echart.data_mtx.lock();
+                        echart.data_queue.push(tmp);
+                        echart.data_mtx.unlock();
+                    }
                 }
             }
             elaspedTime++;
