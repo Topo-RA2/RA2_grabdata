@@ -1,6 +1,7 @@
 ﻿#include "echart.h"
 
 std::thread rev_thread;
+int cashWarning = 280;
 
 Echart::Echart() {
 
@@ -49,16 +50,19 @@ void Echart::revFunction() {
             struct data_struct tmp = data_queue.front();
             data_queue.pop();
             //qDebug() << "tmp.id:" << tmp.id << "tmp.elaspedTime:" << tmp.elaspedTime << "tmp.soliderFactory:" << tmp.soliderFactory;
-            currTime = tmp.elaspedTime;
-            dataArray[tmp.id][consume][currTime]         = tmp.consume;
-            dataArray[tmp.id][soliders][currTime]        = tmp.soliders;
-            dataArray[tmp.id][dog][currTime]             = tmp.dog;
-            dataArray[tmp.id][miner][currTime]           = tmp.miner;
-            dataArray[tmp.id][mainTank][currTime]        = tmp.mainTank;
-            dataArray[tmp.id][zz][currTime]              = tmp.zz;
-            dataArray[tmp.id][warFactory][currTime]      = tmp.warFactory;
-            dataArray[tmp.id][soliderFactory][currTime]  = tmp.soliderFactory;
-            dataArray[tmp.id][cash][currTime]            = tmp.cash;
+            if(-1 != tmp.elaspedTime)
+            {
+                currTime = tmp.elaspedTime;
+                dataArray[tmp.id][consume][currTime]         = tmp.consume;
+                dataArray[tmp.id][soliders][currTime]        = tmp.soliders;
+                dataArray[tmp.id][dog][currTime]             = tmp.dog;
+                dataArray[tmp.id][miner][currTime]           = tmp.miner;
+                dataArray[tmp.id][mainTank][currTime]        = tmp.mainTank;
+                dataArray[tmp.id][zz][currTime]              = tmp.zz;
+                dataArray[tmp.id][warFactory][currTime]      = tmp.warFactory;
+                dataArray[tmp.id][soliderFactory][currTime]  = tmp.soliderFactory;
+                dataArray[tmp.id][cash][currTime]            = tmp.cash;
+            }
         }
         data_mtx.unlock();
         _sleep(500);
@@ -111,7 +115,7 @@ void Echart::resetAllEchart() {
     for(int _id = 0; _id < PLAYERNUM; ++_id) {
         for(int _class = 0; _class < CLASS; ++_class) {
             for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
-                dataArray[_id][_class][_time] = -1;
+                dataArray[_id][_class][_time] = 0;
             }
         }
     }
@@ -138,7 +142,7 @@ QJsonArray Echart::generateEchartSchema() {
 QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
 
     QJsonArray seriesJsonArray;
-
+    qDebug() << "battlePlayerCnt:" << battlePlayerCnt << "currTime:" << currTime;
     for(int p_cnt = 0; p_cnt < battlePlayerCnt; ++p_cnt){//每个人
         QJsonArray playerArray;
         QJsonArray playerMarkPoint;
@@ -149,7 +153,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
             //int jumpFlag = 0;
             for(int p_time = 0; p_time < currTime; ++p_time) {//每个时间
                 if(p_time >= 10) {
-                    if(dataArray[battle_player_vec[p_cnt]][cash][p_time] >= 0 && dataArray[battle_player_vec[p_cnt]][cash][p_time] <= 280) {
+                    if(dataArray[battle_player_vec[p_cnt]][cash][p_time] >= 0 && dataArray[battle_player_vec[p_cnt]][cash][p_time] <= cashWarning) {
                         playerMarkArea.append(QJsonArray{
                                                      QJsonObject{{"xAxis",p_time-1}},
                                                      QJsonObject{{"xAxis",p_time}}
@@ -168,24 +172,26 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                         frameArray.append(dataArray[battle_player_vec[p_cnt]][p_class][p_time]);
                 }
                 playerArray.append(frameArray);
+                if(p_time < currTime - 3)
+                {
+                    QJsonObject miner_change, factory_change;
+                    if(init_miner_num != dataArray[battle_player_vec[p_cnt]][miner][p_time]){
 
-                QJsonObject miner_change, factory_change;
-                if(init_miner_num != dataArray[battle_player_vec[p_cnt]][miner][p_time]){
-
-                    init_miner_num = dataArray[battle_player_vec[p_cnt]][miner][p_time];
-                    miner_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
-                    miner_change.insert("value",
-                                        QStringLiteral("%1牛").arg(init_miner_num));
-                    playerMarkPoint.append(miner_change);
-                }
-                if(init_factory_num != dataArray[battle_player_vec[p_cnt]][warFactory][p_time]){
-                    init_factory_num = dataArray[battle_player_vec[p_cnt]][warFactory][p_time];
-                    factory_change.insert("coord",
-                                        QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
-                    factory_change.insert("value",
-                                        QStringLiteral("%1重").arg(init_factory_num));
-                    playerMarkPoint.append(factory_change);
+                        init_miner_num = dataArray[battle_player_vec[p_cnt]][miner][p_time];
+                        miner_change.insert("coord",
+                                            QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
+                        miner_change.insert("value",
+                                            QStringLiteral("%1牛").arg(init_miner_num));
+                        playerMarkPoint.append(miner_change);
+                    }
+                    if(init_factory_num != dataArray[battle_player_vec[p_cnt]][warFactory][p_time]){
+                        init_factory_num = dataArray[battle_player_vec[p_cnt]][warFactory][p_time];
+                        factory_change.insert("coord",
+                                            QJsonArray{p_time,dataArray[battle_player_vec[p_cnt]][consume][p_time]+10});
+                        factory_change.insert("value",
+                                            QStringLiteral("%1重").arg(init_factory_num));
+                        playerMarkPoint.append(factory_change);
+                    }
                 }
             }
         }
@@ -279,6 +285,7 @@ QJsonDocument Echart::generateAll() {
     jsonDocObj.insert("legend", option_legend);
 
     jsonDoc.setObject(jsonDocObj);
+    //qDebug() << "jsonDoc:" << jsonDoc;
     return jsonDoc;
 }
 

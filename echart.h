@@ -39,7 +39,6 @@ public:
     std::vector<QString> battlePlayerNameVec;
     std::vector<int> battlePlayerColorVec;
 
-
     void revDataArray();
     std::thread revThread();
     void revFunction();

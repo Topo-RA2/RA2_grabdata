@@ -13,6 +13,7 @@
 #include <QVariantMap>
 #include <QtWebEngineWidgets/QWebEngineView>
 #include <QResizeEvent>
+#include <QThread>
 
 #include <qt_windows.h>
 #include <psapi.h>
@@ -22,6 +23,7 @@
 #include "constant.h"
 #include "player.h"
 #include "echart.h"
+#include "setting.h"
 
 namespace Ui {
 class RA2Mem;
@@ -39,6 +41,7 @@ signals:
 
 private slots:
     void on_pushButton_clicked();
+    void on_settingButton_clicked();
     void onResizeEcharts();
 
 protected:
@@ -62,12 +65,17 @@ public:
     int playerCount = 0;                //A:总玩家数
     int battlePlayerCnt = 0;            //B:除去观战的玩家数
     int spectatorCount = 0;             //C = A - B
+    int lastGameTime[PLAYERNUM] = {0};
+    int lastExeTime[PLAYERNUM] = {0};
+    int judgeGameCount[PLAYERNUM] = {0};
+    bool isGameOver = false;
     std::vector<QString> battlePlayerNameVec;   //游戏玩家name数组
     std::vector<int> battlePlayerColorVec;      //游戏玩家color数组
     QList<QString> fieldlist = { "Settings", "other1", "other2", "other3", "other4", "other5", "other6", "other7", };
     std::vector<int> player_id_vec;
     std::vector<int> battle_player_id_vec;
     Echart echart;
+    Setting *setting;
 
     void startTimer();
     void switchStatusCode(int);
