@@ -115,7 +115,7 @@ void Echart::resetAllEchart() {
     for(int _id = 0; _id < PLAYERNUM; ++_id) {
         for(int _class = 0; _class < CLASS; ++_class) {
             for(int _time = 0; _time < TIME_LIMIT_2; ++_time) {
-                dataArray[_id][_class][_time] = 0;
+                dataArray[_id][_class][_time] = -1;
             }
         }
     }
@@ -172,7 +172,7 @@ QJsonArray Echart::generateEchartOptionSeries(int opt){//opt=1,data=[]
                         frameArray.append(dataArray[battle_player_vec[p_cnt]][p_class][p_time]);
                 }
                 playerArray.append(frameArray);
-                if(p_time < currTime - 3)
+                if(p_time > 15 && p_time < currTime - 3)
                 {
                     QJsonObject miner_change, factory_change;
                     if(init_miner_num != dataArray[battle_player_vec[p_cnt]][miner][p_time]){
