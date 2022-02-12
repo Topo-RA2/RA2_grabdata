@@ -50,7 +50,7 @@ void Echart::revFunction() {
             struct data_struct tmp = data_queue.front();
             data_queue.pop();
             //qDebug() << "tmp.id:" << tmp.id << "tmp.elaspedTime:" << tmp.elaspedTime << "tmp.soliderFactory:" << tmp.soliderFactory;
-            if(-1 != tmp.elaspedTime)
+            if(-1 != tmp.elaspedTime && -1 != tmp.consume)
             {
                 currTime = tmp.elaspedTime;
                 dataArray[tmp.id][consume][currTime]         = tmp.consume;
