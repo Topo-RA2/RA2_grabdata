@@ -16,11 +16,13 @@ RA2Mem::RA2Mem(QWidget *parent) :
 
     qsrand(QDateTime::currentDateTimeUtc().toTime_t());
 
+    qDebug() << "init webview";
     connect(ui->webview1, SIGNAL(loadFinished(bool)), this, SLOT(onResizeEcharts()));//完成加载
     QString url = QString("qrc:/htmlEcharts/view1.html");
     ui->webview1->load(QUrl(url));
 
     startTimer();
+    qDebug() << "init done";
 }
 RA2Mem::~RA2Mem()
 {
@@ -236,6 +238,8 @@ void RA2Mem::switchStatusCode(int code) {
         checkTimer2 = new QTimer;
         checkTimer2->start(1000);
 
+        int once_run = 1;
+
         connect(checkTimer2, &QTimer::timeout, [&]()->void {
             gameProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
             if(gameProcess == NULL)
@@ -245,10 +249,19 @@ void RA2Mem::switchStatusCode(int code) {
             }
             if(isGameOver)
                 return;
-            if(elaspedTime < TIME_LIMIT_1) {
+
+            if(gameFrame > 0)
+            {
+                get_all_unit(gameFrame);
+                echart.unit_data_mtx.lock();
+                //echart.unit_data_queue.push(get_all_unit(gameFrame));
+                echart.unit_data_mtx.unlock();
+            }
+            
+            if(gameFrame < TIME_LIMIT_1 * 60) {
                 for (int i: player_id_vec) {
                     struct data_struct tmp = get_one_player_data(i);
-                    if(lastGameTime[i] > 0) // 游戏经过读条后开始了
+                    if(lastGameFrame[i] > 0) // 游戏经过读条后开始了
                     {
                         echart.data_mtx.lock();
                         echart.data_queue.push(tmp);
@@ -257,7 +270,8 @@ void RA2Mem::switchStatusCode(int code) {
                 }
             }
             else {
-                if(TIME_LIMIT_1 == elaspedTime) {
+                if(TIME_LIMIT_1 * 60 <= gameFrame && once_run) {
+                    once_run = 0;
                     battle_player_id_vec = echart.judgeOb();
                     int cnt = 0;
                     for(int i = 0; i < playerCount; ++i)
@@ -275,7 +289,7 @@ void RA2Mem::switchStatusCode(int code) {
                         break;
                     }
                     struct data_struct tmp = get_one_player_data(i);
-                    if(lastGameTime[i] > 0) // 游戏经过读条后开始了
+                    if(lastGameFrame[i] > 0) // 游戏经过读条后开始了
                     {
                         echart.data_mtx.lock();
                         echart.data_queue.push(tmp);
@@ -283,7 +297,6 @@ void RA2Mem::switchStatusCode(int code) {
                     }
                 }
             }
-            elaspedTime++;
         });
     }
 
@@ -307,6 +320,54 @@ void RA2Mem::switchStatusCode(int code) {
     }
 }
 
+std::vector<global_unit_data_struct> RA2Mem::get_all_unit(int frame)
+{
+    std::vector<global_unit_data_struct> ans;
+    int unitNum = readMemory(gameProcess, 0xA8EC88);
+    int unitArr = readMemory(gameProcess, 0xA8EC7C);
+    int isAddressValid = 0;
+    for(int i = 0; i < unitNum; ++i)
+    {
+        int unitArrPoint = readMemory(gameProcess, unitArr + i * 4);
+        int unitArrPointIdAdress = unitArrPoint + 0x10;
+        int unitArrPointCoordXAdress = unitArrPoint + 0x208;
+        int unitArrPointCoordYAdress = unitArrPoint + 0x20C;
+        int unitArrPointPlayerAdress = unitArrPoint + 0x21C;
+
+        int unitArrPointId = 0;
+        int unitArrPointCoordX = 0;
+        int unitArrPointCoordY = 0;
+        int unitArrPointPlayer = 0;
+
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(unitArrPointIdAdress), &unitArrPointId, sizeof(unitArrPointId), 0);
+        if (isAddressValid == 0)
+            unitArrPointId = 0;
+
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(unitArrPointCoordXAdress), &unitArrPointCoordX, sizeof(unitArrPointCoordX), 0);
+        if (isAddressValid == 0)
+            unitArrPointCoordX = 0;
+
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(unitArrPointCoordYAdress), &unitArrPointCoordY, sizeof(unitArrPointCoordY), 0);
+        if (isAddressValid == 0)
+            unitArrPointCoordY = 0;
+
+        isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(unitArrPointPlayerAdress), &unitArrPointPlayer, sizeof(unitArrPointPlayer), 0);
+        if (isAddressValid == 0)
+            unitArrPointPlayer = 0;
+
+        qDebug() << "frame:" << frame << " unitArrPointId: " << unitArrPointId << " unitArrPointCoordX:" << unitArrPointCoordX << " unitArrPointPlayer: " << unitArrPointPlayer;
+        global_unit_data_struct tmp = {
+            frame,
+            unitArrPointId,
+            unitArrPointCoordX,
+            unitArrPointCoordY,
+            unitArrPointPlayer
+        };
+        //ans.push_back(tmp);
+    }
+    return ans;
+}
+
 struct data_struct RA2Mem::get_one_player_data(int i) {
 
     int soliderFactoryAddress,  soliderFactoryCount;
@@ -322,21 +383,16 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
 
     int isAddressValid;
 
-    int exeTimeCount = readMemory(gameProcess, 0x87e774);
-    int gameTimeCount = readMemory(gameProcess, 0xAbcd4c);
-    qDebug() << "lastGameTime:" << lastGameTime[i] << "gameTimeCount:" << gameTimeCount;
+    gameFrame = readMemory(gameProcess, 0x00A8ED84);
+    qDebug() << "lastGameFrame:" << lastGameFrame[i] << "gameFrame:" << gameFrame;
 
-    if(lastGameTime[i] == gameTimeCount)
+    if(lastGameFrame[i] == gameFrame)
     {
-        struct data_struct tmp = {
-            i,
-            -1,
-            0,0,0,0,0,0,0,0,0
-        };
+        struct data_struct tmp = lastFrameData[i];
         ++judgeGameCount[i];
         return tmp;
     }
-    if(lastGameTime[i] != gameTimeCount)
+    if(lastGameFrame[i] != gameFrame)
     {
         judgeGameCount[i] = 0;
         qDebug() << "playerName:" << m_player[i].get_name();
@@ -355,15 +411,12 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
         isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(cashAddress), &cashCount, sizeof(minerAddress), 0);
         if (isAddressValid == 0)
             cashCount = 0;
-        if((elaspedTime <= 5) && (cashCount > 30000 || cashCount <= 0)) {
-            cashCount = -1;
-        }
         consumeAddress = playerAddress;
         consumeAddress += 0x2DC;
         isAddressValid = ReadProcessMemory(gameProcess, (LPCVOID)(consumeAddress), &consumeCount, sizeof(consumeAddress), 0);
         if (isAddressValid == 0)
             consumeCount = 0;
-        qDebug() << "m_player[i].get_side():" << m_player[i].get_side() << "consumeCount: " << consumeCount << "elaspedTime: " << elaspedTime;
+        qDebug() << "m_player[i].get_side():" << m_player[i].get_side() << "consumeCount: " << consumeCount;
 
         {
             //动员兵、美国大兵
@@ -433,7 +486,7 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
         qDebug() << "soliderFactoryCount: " << soliderFactoryCount << "dogCnt:" << dogCnt<< "minerCnt:" << minerCnt << "mainTankCnt: " << mainTankCnt;
         struct data_struct tmp = {
             i,
-            elaspedTime,
+            gameFrame,
             consumeCount,
             solidersCnt,
             dogCnt,
@@ -444,20 +497,28 @@ struct data_struct RA2Mem::get_one_player_data(int i) {
             soliderFactoryCount,
             cashCount
         };
-        lastGameTime[i] = gameTimeCount;
-        lastExeTime[i] = exeTimeCount;
+        lastFrameData[i] = tmp;
+        lastGameFrame[i] = gameFrame;
         return tmp;
     }
 }
 
 void RA2Mem::reset_all_tmp_data() {
-    elaspedTime = 0;
+    gameFrame = 0;
     battlePlayerCnt = 0;
     spectatorCount = 0;
-    for(int i=0; i < PLAYERNUM; ++i)
+    for(int i = 0; i < PLAYERNUM; ++i)
     {
-        lastGameTime[i] = 0;
+        lastGameFrame[i] = 0;
         judgeGameCount[i] = 0;
+    }
+    for(int i = 0; i < PLAYERNUM; ++i)
+    {
+        lastFrameData[i] = {
+            i,
+            -1,
+            0,0,0,0,0,0,0,0,0
+        };
     }
     isGameOver = false;
     gameProcess = NULL;

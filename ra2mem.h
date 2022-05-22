@@ -55,7 +55,7 @@ private:
 public:
     DWORD PID = 0;
     int gameStatus;                     //游戏状态
-    int elaspedTime;                    //游戏启动时间（每次进timer+1）
+    int gameFrame;                    //游戏启动时间（每次进timer+1）
     QString qGameFile;                  //保存游戏运行的文件路径
     QFile* gameData;                    //保存游戏数据
     HANDLE gameProcess;
@@ -65,8 +65,7 @@ public:
     int playerCount = 0;                //A:总玩家数
     int battlePlayerCnt = 0;            //B:除去观战的玩家数
     int spectatorCount = 0;             //C = A - B
-    int lastGameTime[PLAYERNUM] = {0};
-    int lastExeTime[PLAYERNUM] = {0};
+    int lastGameFrame[PLAYERNUM] = {0};
     int judgeGameCount[PLAYERNUM] = {0};
     bool isGameOver = false;
     std::vector<QString> battlePlayerNameVec;   //游戏玩家name数组
@@ -77,10 +76,13 @@ public:
     Echart echart;
     Setting *setting;
 
+    struct data_struct lastFrameData[PLAYERNUM];
+
     void startTimer();
     void switchStatusCode(int);
     void reset_all_tmp_data();
     struct data_struct get_one_player_data(int);
+    std::vector<global_unit_data_struct> get_all_unit(int);
 
     DWORD readMemory(HANDLE, DWORD);
     DWORD readMemory(HANDLE, DWORD, DWORD);

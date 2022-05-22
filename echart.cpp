@@ -49,10 +49,10 @@ void Echart::revFunction() {
         {
             struct data_struct tmp = data_queue.front();
             data_queue.pop();
-            //qDebug() << "tmp.id:" << tmp.id << "tmp.elaspedTime:" << tmp.elaspedTime << "tmp.soliderFactory:" << tmp.soliderFactory;
-            if(-1 != tmp.elaspedTime)
+            //qDebug() << "tmp.id:" << tmp.id << "tmp.elaspedFrame:" << tmp.elaspedFrame << "tmp.soliderFactory:" << tmp.soliderFactory;
+            if(-1 != tmp.elaspedFrame)
             {
-                currTime = tmp.elaspedTime;
+                currTime = (int)(tmp.elaspedFrame *1.0 / 60);
                 dataArray[tmp.id][consume][currTime]         = tmp.consume;
                 dataArray[tmp.id][soliders][currTime]        = tmp.soliders;
                 dataArray[tmp.id][dog][currTime]             = tmp.dog;

@@ -5,7 +5,7 @@
 
 struct data_struct{
     int id;
-    int elaspedTime;
+    int elaspedFrame;
     int consume;
     int soliders;
     int dog;
@@ -16,6 +16,16 @@ struct data_struct{
     int soliderFactory;
     int cash;
 };
+
+struct global_unit_data_struct
+{
+    int frame;
+    int id;
+    int coord_x;
+    int coord_y;
+    int p_player;
+};
+
 enum dataArraySet {consume,soliders,dog,miner,mainTank,zz,warFactory,soliderFactory,cash};
 
 class Echart{
@@ -30,6 +40,10 @@ public:
     ~Echart();
     std::mutex data_mtx;
     std::queue<struct data_struct> data_queue;
+
+    std::mutex unit_data_mtx;
+    std::queue<std::vector<global_unit_data_struct>> unit_data_queue;
+
     int dataArray[PLAYERNUM][CLASS][TIME_LIMIT_2];
     int isJudge = 0;
     int currTime = 0;
