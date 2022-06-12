@@ -16,6 +16,7 @@
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
+void ToggleButton(const char* str_id, bool* v);
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int showGuiThread();
