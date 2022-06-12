@@ -22,6 +22,9 @@
     <Filter Include="utils">
       <UniqueIdentifier>{ad51c210-a19c-4a80-8918-c9044db84972}</UniqueIdentifier>
     </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{1feba571-486c-4c75-9ddf-05c552c041df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -56,6 +59,21 @@
     </ClCompile>
     <ClCompile Include="find_game.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="constant.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\implot.cpp">
+      <Filter>imgui_backend</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\implot_items.cpp">
+      <Filter>imgui_backend</Filter>
+    </ClCompile>
+    <ClCompile Include="implot_demo.cpp">
+      <Filter>imgui_main</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="find_game.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\implot.h">
+      <Filter>imgui_backend</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\implot_internal.h">
+      <Filter>imgui_backend</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

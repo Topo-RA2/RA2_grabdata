@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <iostream>
 #include <algorithm>
+#include <unordered_map>
 
 #pragma warning (disable: 4005)
 #include "d3d9.h"
@@ -37,5 +38,7 @@
 
 #pragma warning(disable:4996)
 
+using std::cout;
 using std::thread;
 using std::string;
+using std::vector;

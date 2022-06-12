@@ -1,4 +1,5 @@
 #include "imgui_main.h"
+//#include "implot_demo.cpp"
 
 // Data
 static LPDIRECT3D9              g_pD3D = NULL;
@@ -73,6 +74,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 // Main code
+
+extern Game game;
+//extern ImPlotContext* GImPlot = NULL;
+
 int showGuiThread()
 {
     try
@@ -98,6 +103,8 @@ int showGuiThread()
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
+        GImPlot = ImPlot::CreateContext();
+
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         // Setup Dear ImGui style
@@ -136,6 +143,8 @@ int showGuiThread()
             ImGui_ImplWin32_NewFrame();
             ImGui::NewFrame();
 
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? "Game start!" : "Game end!");//Green
+            ImPlot::ShowDemoWindow();
             //ImGui::Checkbox("Get Task", &setting.switchGet);
             //ImGui::Checkbox("Post Task", &setting.switchPost);
             //ImGui::Checkbox("Del File", &setting.switchDelete);

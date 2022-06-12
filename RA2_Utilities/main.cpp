@@ -9,6 +9,4 @@ int main()
 {
     thread imgui_thread(showGuiThread);
     imgui_thread.join();
-
-    
 }
