@@ -25,6 +25,9 @@
     <Filter Include="test">
       <UniqueIdentifier>{1feba571-486c-4c75-9ddf-05c552c041df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tcp_server">
+      <UniqueIdentifier>{f27a36ca-a858-4a87-9514-6c74fc9699a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,9 +57,6 @@
     <ClCompile Include="imgui_main.cpp">
       <Filter>imgui_main</Filter>
     </ClCompile>
-    <ClCompile Include="read_memory.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="find_game.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -74,6 +74,12 @@
     </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="apc_inject.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="tcp_server.cpp">
+      <Filter>tcp_server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +113,6 @@
     <ClInclude Include="imgui_main.h">
       <Filter>imgui_main</Filter>
     </ClInclude>
-    <ClInclude Include="read_memory.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="find_game.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -118,6 +121,12 @@
     </ClInclude>
     <ClInclude Include="imgui\implot_internal.h">
       <Filter>imgui_backend</Filter>
+    </ClInclude>
+    <ClInclude Include="apc_inject.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="tcp_server.h">
+      <Filter>tcp_server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

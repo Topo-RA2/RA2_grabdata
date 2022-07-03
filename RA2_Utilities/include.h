@@ -8,13 +8,14 @@
 #include <Psapi.h>
 #include <shlwapi.h>
 
-#include <io.h>
 #include <map>
+#include <io.h>
 #include <thread>
 #include <chrono>
 #include <string>
 #include <vector>
 #include <memory>
+#include <tchar.h>
 #include <sstream>
 #include <fstream>
 #include <cstddef>
@@ -34,7 +35,6 @@
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "userenv.lib")
 #pragma comment(lib, "bcrypt.lib")
-
 
 #pragma warning(disable:4996)
 

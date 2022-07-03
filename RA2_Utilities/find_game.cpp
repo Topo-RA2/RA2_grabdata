@@ -1,9 +1,14 @@
 #include "find_game.h"
+#include "apc_inject.h"
+#include "tcp_server.h"
+
+#include <co/flag.h>
+#include <co/log.h>
 
 Game::Game()
 {
+    flag::set_value("cout", "true"); // FLG_b -> true
 	searchGameTask();
-    readGameDataTask();
 }
 
 Game::~Game()
@@ -50,6 +55,14 @@ void Game::searchGameTask()
                             ++game_id;
                             game_status = 1;
                             read_once = 1;
+
+                            PCWSTR pszLibFile = NULL;
+                            const wchar_t* dll_path = L"C:\\Users\\49673\\Documents\\GitHub\\RA2_grabdata\\Release\\gamemd_inject.dll";
+                            pszLibFile = (wchar_t*)malloc((wcslen(dll_path) + 1) * sizeof(wchar_t));
+                            pszLibFile = dll_path;
+
+                            LOG << "APC: " << demoQueueUserAPC(pszLibFile, game_pid);
+                            start_tcp_thread();
                         }
                     }
                     //std::cout << "[searchGameTask] game_status: " << game_status << '\n';
@@ -63,66 +76,5 @@ void Game::searchGameTask()
 			}
 		}
 	);
-    t.detach();
-}
-vector<std::unordered_map<const char*, int>> each_player_all_data[8];
-struct PlayerInfo player_info[8];
-void Game::readGameDataTask()
-{
-    cout << "[readGameDataTask] enter" << "\n";
-    thread t(
-        [&]() {
-            while (true)
-            {
-                Sleep(1000);
-                try
-                {
-                    cout << "[readGameDataTask] game_handle: " << game_handle << "\n";
-                    if (game_handle != nullptr) // 游戏存在
-                    {
-                        cout << "game_status: " << game_status << "\n"
-                            << "getGameFrame: " << getGameFrame() << "\n";
-
-                        if (1 == game_status && getGameFrame() > 0) // 游戏进行中
-                        {
-                            cout << "read_once: " << read_once << "\n"
-                                << "getPlayerNum: " << getPlayerNum() << "\n";
-                            if (1 == read_once)
-                            {
-                                read_once = 0;
-                                for (int i = 0; i < getPlayerNum(); ++i)
-                                {
-                                    player_info[i].color = getPlayerColor(i);
-                                    wcscpy(player_info[i].name, getPlayerName(i));
-                                    player_info[i].id = getPlayerId(i);
-                                    player_info[i].spectator = getPlayerSpectator(i) == 9 ? 1 : 0;
-                                }
-                                for (int i = 0; i < getPlayerNum(); ++i)
-                                {
-                                    cout << "[readGameDataTask] i: " << i << "\n"
-                                        << "player_info[i].color: " << player_info[i].color << "\n"
-                                        << "player_info[i].id: " << player_info[i].id << "\n"
-                                        << "player_info[i].spectator: " << player_info[i].spectator << "\n";
-                                    std::wcout << "player_info[i].name: " << player_info[i].name << "\n";
-                                }
-                            }
-                            for (int i = 0; i < getPlayerNum(); ++i)
-                            {
-                                //cout << "getPlayerSpectator(i): " << getPlayerSpectator(i) << "\n";
-                                if(0 == getPlayerSpectator(i))
-                                    each_player_all_data[i].push_back(GetEachPlayerData(getPlayerPtr(i)));
-                            }
-                        }
-                    }
-                }
-                catch (...)
-                {
-
-                }
-
-                
-            }
-        }
-    );
     t.detach();
 }

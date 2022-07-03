@@ -13,13 +13,18 @@
 #include "find_game.h"
 
 // Forward declarations of helper functions
-bool CreateDeviceD3D(HWND hWnd);
+void init_wnd();
+void init_d3d9();
+void init_imgui();
+void msg_handle();
 void CleanupDeviceD3D();
 void ResetDevice();
-void ToggleButton(const char* str_id, bool* v);
+void clear_setting();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-int showGuiThread();
+void ToggleButton(const char* str_id, bool* v);
+
+void showGuiThread();
 
 namespace ImPlot {
 	ImPlotContext* CreateContext();

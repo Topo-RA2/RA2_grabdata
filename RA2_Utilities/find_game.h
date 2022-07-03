@@ -1,14 +1,5 @@
 #pragma once
 #include "include.h"
-#include "read_memory.h"
-
-struct PlayerInfo
-{
-	wchar_t name[40];
-	int color;
-	int spectator;
-	int id;
-};
 
 class Game
 {
@@ -25,6 +16,4 @@ public:
 	~Game();
 
 	void searchGameTask();
-	void readGameDataTask();
-
 };

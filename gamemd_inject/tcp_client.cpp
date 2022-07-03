@@ -59,7 +59,7 @@ void tcp_thread()
 
 void start_tcp_thread()
 {
-    OutputDebugStringA("[start_tcp_thread] Start!");
+    OutputDebugStringA("[start_tcp_thread] Client Start!");
     thread t{ tcp_thread };
     t.detach();
 }

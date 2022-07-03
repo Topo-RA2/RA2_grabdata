@@ -1,0 +1,124 @@
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:7] cb: 142
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 14148
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 17996
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 23584
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 21852
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 16480
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 22852
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 30160
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 17052
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 19052
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 9492
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 29496
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 30360
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 24808
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 532
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 7544
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 11056
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 19360
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 26136
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 25704
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 2268
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 14500
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 24640
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 28636
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:61] [+] Using thread: 20836
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:63] hThread: 0x688
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:71] else tree
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:73] dwResult: 1
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\apc_inject.cpp:80] [+] Success: DLL injected via CreateRemoteThread().
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\find_game.cpp:64] APC: 0
+I0703 18:15:35.915 19292 C:\Users\49673\Documents\GitHub\RA2_grabdata\RA2_Utilities\tcp_server.cpp:45] [start_tcp_thread] Server Start!
+I0703 18:15:35.915 13284 D:\work\cocoyaxi\src\so\tcp.cc:283] server start: 0.0.0.0:7788
