@@ -52,6 +52,8 @@ extern Game game;
 int init_img = 0;
 int img_width, img_height, img_channel;
 PDIRECT3DTEXTURE9 my_texture = NULL;
+int img2_width, img2_height, img2_channel;
+PDIRECT3DTEXTURE9 small_id = NULL;
 
 bool LoadTextureFromFile(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
 {
@@ -76,6 +78,8 @@ void firstLoad()
     {
         bool ret = LoadTextureFromFile("C:\\Users\\49673\\Desktop\\spawnmap.jpg", &my_texture, &img_width, &img_height);
         IM_ASSERT(ret);
+        ret = LoadTextureFromFile("C:\\Users\\49673\\Desktop\\icon.jpg", &small_id, &img2_width, &img2_height);
+        IM_ASSERT(ret);
         init_img = 1;
     }
 }
@@ -93,9 +97,14 @@ void render_handle()
     ImGui::Begin("DirectX9 Texture Test");
     ImGui::Text("pointer = %p", my_texture);
     ImGui::Text("size = %d x %d", img_width, img_height);
-    int auto_width = 1024;
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    int auto_width = 1600;
     ImGui::Image((void*)my_texture, ImVec2(auto_width, img_height * 1.0 / img_width * auto_width));
+    //ImGui::GetWindowDrawList()->AddImage(small_id, p, ImVec2(p.x + img2_width, p.y + img2_height), ImVec2(0, 0), ImVec2(1, 1));
+    ImGui::GetWindowDrawList()->AddImage(small_id, p, ImVec2(p.x + 100, p.y + 100), ImVec2(0, 0), ImVec2(1, 1));
+
     ImGui::End();
+
 
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? "Game start!" : "Game end!");//Green
                                                                                                             //ImPlot::ShowDemoWindow();
@@ -178,7 +187,7 @@ void init_wnd()
         wc.lpszClassName,
         _T("Dear ImGui DirectX9"),
         WS_OVERLAPPEDWINDOW,
-        100, 100, 1366, 768,
+        100, 100, 1600, 900,
         NULL,
         NULL,
         wc.hInstance,
