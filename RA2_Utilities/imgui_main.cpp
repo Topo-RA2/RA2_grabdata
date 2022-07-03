@@ -1,6 +1,8 @@
 #include "imgui_main.h"
 //#include "implot_demo.cpp"
 
+
+
 // Data
 LPDIRECT3D9              g_pD3D = NULL;
 LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
@@ -47,15 +49,53 @@ void ToggleButton(const char* str_id, bool* v)
 // Main code
 extern Game game;
 //extern ImPlotContext* GImPlot = NULL;
+int init_img = 0;
+int img_width, img_height, img_channel;
+PDIRECT3DTEXTURE9 my_texture = NULL;
+
+bool LoadTextureFromFile(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
+{
+    // Load texture from disk
+    PDIRECT3DTEXTURE9 texture;
+    HRESULT hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
+    if (hr != S_OK)
+        return false;
+
+    // Retrieve description of the texture surface so we can access its size
+    D3DSURFACE_DESC my_image_desc;
+    texture->GetLevelDesc(0, &my_image_desc);
+    *out_texture = texture;
+    *out_width = (int)my_image_desc.Width;
+    *out_height = (int)my_image_desc.Height;
+    return true;
+}
+
+void firstLoad()
+{
+    if (init_img == 0)
+    {
+        bool ret = LoadTextureFromFile("C:\\Users\\49673\\Desktop\\spawnmap.jpg", &my_texture, &img_width, &img_height);
+        IM_ASSERT(ret);
+        init_img = 1;
+    }
+}
 
 void render_handle()
 {
+    firstLoad();
     // Start the Dear ImGui frame
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+
+    ImGui::Begin("DirectX9 Texture Test");
+    ImGui::Text("pointer = %p", my_texture);
+    ImGui::Text("size = %d x %d", img_width, img_height);
+    int auto_width = 1024;
+    ImGui::Image((void*)my_texture, ImVec2(auto_width, img_height * 1.0 / img_width * auto_width));
+    ImGui::End();
 
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? "Game start!" : "Game end!");//Green
                                                                                                             //ImPlot::ShowDemoWindow();
@@ -71,6 +111,8 @@ void render_handle()
 
     //ImGui::DragInt("taskLen (1 -> 5)", &setting.taskLen, 0.1f, 1, 5, "%d", ImGuiSliderFlags_None);
     //ImGui::DragFloat("postBandwidth (0 -> 3)", &setting.postBandwidth, 0.02f, 0.0f, 3.0f, "%.1f", ImGuiSliderFlags_None);
+
+    //ImGui::ShowDemoWindow();
 
     static bool animate = true;
     ToggleButton("animate", &animate);
@@ -108,6 +150,8 @@ void render_handle()
     // Handle loss of D3D9 device
     if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         ResetDevice();
+
+    //g_texture->Release();
 }
 
 void init_wnd()
@@ -134,7 +178,7 @@ void init_wnd()
         wc.lpszClassName,
         _T("Dear ImGui DirectX9"),
         WS_OVERLAPPEDWINDOW,
-        100, 100, 800, 600,
+        100, 100, 1366, 768,
         NULL,
         NULL,
         wc.hInstance,
