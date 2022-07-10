@@ -1,6 +1,7 @@
 #include "tcp_server.h"
 #include "co/co.h"
 #include "co/so.h"
+#include "data_processing.h"
 
 tcp::Server s;
 
@@ -26,6 +27,7 @@ void on_connection(tcp::Connection conn)
         {
             Json x = json::parse(fastring(buf, r));
             LOG << "server recv:" << x.pretty();
+            insert_new_data(x);
         }
     }
 }

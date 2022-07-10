@@ -122,6 +122,7 @@ void render_handle()
     //ImGui::DragFloat("postBandwidth (0 -> 3)", &setting.postBandwidth, 0.02f, 0.0f, 3.0f, "%.1f", ImGuiSliderFlags_None);
 
     //ImGui::ShowDemoWindow();
+    ImPlot::ShowDemoWindow();
 
     static bool animate = true;
     ToggleButton("animate", &animate);

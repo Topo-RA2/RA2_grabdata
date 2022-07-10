@@ -10,6 +10,8 @@
 
 #include <map>
 #include <io.h>
+#include <mutex>
+#include <queue>
 #include <thread>
 #include <chrono>
 #include <string>
@@ -36,9 +38,13 @@
 #pragma comment(lib, "userenv.lib")
 #pragma comment(lib, "bcrypt.lib")
 
+#include "co/json.h"
+
 #pragma warning(disable:4996)
 
 using std::cout;
+using std::queue;
+using std::mutex;
 using std::thread;
 using std::string;
 using std::vector;

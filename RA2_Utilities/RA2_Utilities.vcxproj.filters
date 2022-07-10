@@ -81,6 +81,9 @@
     <ClCompile Include="tcp_server.cpp">
       <Filter>tcp_server</Filter>
     </ClCompile>
+    <ClCompile Include="data_processing.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="tcp_server.h">
       <Filter>tcp_server</Filter>
+    </ClInclude>
+    <ClInclude Include="data_processing.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

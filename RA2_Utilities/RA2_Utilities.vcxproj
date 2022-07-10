@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="apc_inject.cpp" />
     <ClCompile Include="constant.cpp" />
+    <ClCompile Include="data_processing.cpp" />
     <ClCompile Include="find_game.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apc_inject.h" />
+    <ClInclude Include="data_processing.h" />
     <ClInclude Include="find_game.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />

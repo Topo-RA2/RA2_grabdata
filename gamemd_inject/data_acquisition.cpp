@@ -89,8 +89,33 @@ DWORD get_unit_y(LPDWORD* u_ptr)
     return *(LPDWORD)(u_ptr + 0x20C / 4);
 }
 
+DWORD get_player_cash(int i)
+{
+    return
+        *(LPDWORD)
+        (*(LPDWORD)((*(LPDWORD)0xA8022C) + 0x4 * i) + 0x30C);
+}
+DWORD get_player_consume(int i)
+{
+    return
+        *(LPDWORD)
+        (*(LPDWORD)((*(LPDWORD)0xA8022C) + 0x4 * i) + 0x2DC);
+}
+DWORD get_player_power_pro(int i)
+{
+    return
+        *(LPDWORD)
+        (*(LPDWORD)((*(LPDWORD)0xA8022C) + 0x4 * i) + 0x53A4);
+}
+DWORD get_player_power_con(int i)
+{
+    return
+        *(LPDWORD)
+        (*(LPDWORD)((*(LPDWORD)0xA8022C) + 0x4 * i) + 0x53A8);
+}
+
 struct PlayerInfo player_info[8];
-queue<vector<UnitInfo>> queue_all_unit;
+queue<FrameInfo> queue_each_frame;
 mutex queue_mtx;
 
 void data_acquisition()
@@ -133,7 +158,7 @@ void data_acquisition()
             char* unit_name(get_unit_name(p_unit_class));
             int unit_x = get_unit_x(p_unit_class);
             int unit_y = get_unit_y(p_unit_class);
-            struct UnitInfo tmp
+            struct UnitInfo unit_info
             {
                 unit_id,
                 unit_name,
@@ -141,10 +166,35 @@ void data_acquisition()
                 unit_y,
                 p_id,
             };
-            all_unit.push_back(tmp);
+            all_unit.push_back(unit_info);
         }
+
+        vector<PlayerDataInfo> all_player;
+        for (int i = 0; i < get_player_num(); ++i)
+        {
+            int id = get_player_id(i);
+            int cash = get_player_cash(i);
+            int consume = get_player_consume(i);
+            int powerPro = get_player_power_pro(i);
+            int powerCon = get_player_power_con(i);
+            struct PlayerDataInfo player_data_info
+            {
+                id,
+                cash,
+                consume,
+                powerPro,
+                powerCon
+            };
+            all_player.push_back(player_data_info);
+        }
+        
+        struct FrameInfo frame_info
+        {
+            all_unit,
+            all_player
+        };
         queue_mtx.lock();
-        queue_all_unit.push(all_unit);
+        queue_each_frame.push(frame_info);
         queue_mtx.unlock();
     }
 }

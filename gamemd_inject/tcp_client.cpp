@@ -2,7 +2,7 @@
 #include "data_acquisition.h"
 
 tcp::Client c("127.0.0.1", 7788);
-extern queue<vector<UnitInfo>> queue_all_unit;
+extern queue<FrameInfo> queue_each_frame;
 extern mutex queue_mtx;
 
 void send_data()
@@ -12,12 +12,15 @@ void send_data()
         Sleep(100);
         if (c.connected())
         {
-            while (!queue_all_unit.empty())
+            while (!queue_each_frame.empty())
             {
                 queue_mtx.lock();
-                vector<UnitInfo> vec_unit_info = queue_all_unit.front();
-                queue_all_unit.pop();
+                struct FrameInfo each_frame_info = queue_each_frame.front();
+                queue_each_frame.pop();
                 queue_mtx.unlock();
+
+                vector<UnitInfo> vec_unit_info = each_frame_info.all_unit;
+                vector<PlayerDataInfo> vec_player_info = each_frame_info.p_data;
 
                 Json send_tmp;
                 for (int i = 0; i < vec_unit_info.size(); ++i)
@@ -29,8 +32,20 @@ void send_data()
                     each_tmp["y"] = vec_unit_info[i].y;
                     each_tmp["p_id"] = vec_unit_info[i].p_id;
                     
-                    send_tmp["data"].push_back(each_tmp.str());
+                    send_tmp["unit_data"].push_back(each_tmp.str());
                 }
+                for (int i = 0; i < vec_player_info.size(); ++i)
+                {
+                    Json each_tmp;
+                    each_tmp["id"] = vec_player_info[i].id;
+                    each_tmp["cash"] = vec_player_info[i].cash;
+                    each_tmp["consume"] = vec_player_info[i].consume;
+                    each_tmp["powerPro"] = vec_player_info[i].powerPro;
+                    each_tmp["powerCon"] = vec_player_info[i].powerCon;
+
+                    send_tmp["player_data"].push_back(each_tmp.str());
+                }
+
                 LOG << "send_tmp: " << send_tmp;
                 int r = c.send(send_tmp.str().c_str(), send_tmp.str().size());
                 if (r <= 0)

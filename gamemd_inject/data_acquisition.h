@@ -17,4 +17,18 @@ struct UnitInfo
 	int p_id;
 };
 
+struct PlayerDataInfo
+{
+	int id;
+	int cash;
+	int consume;
+	int powerPro;
+	int powerCon;
+};
+struct FrameInfo
+{
+	vector<UnitInfo> all_unit;
+	vector<PlayerDataInfo> p_data;
+};
+
 void start_data_acquisition_thread();
