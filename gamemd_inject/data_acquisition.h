@@ -27,6 +27,7 @@ struct PlayerDataInfo
 };
 struct FrameInfo
 {
+	int curr_frame;
 	vector<UnitInfo> all_unit;
 	vector<PlayerDataInfo> p_data;
 };

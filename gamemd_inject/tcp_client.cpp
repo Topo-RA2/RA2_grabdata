@@ -45,7 +45,7 @@ void send_data()
 
                     send_tmp["player_data"].push_back(each_tmp.str());
                 }
-
+                send_tmp["curr_frame"] = each_frame_info.curr_frame;
                 LOG << "send_tmp: " << send_tmp;
                 int r = c.send(send_tmp.str().c_str(), send_tmp.str().size());
                 if (r <= 0)

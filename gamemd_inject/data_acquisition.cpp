@@ -187,9 +187,10 @@ void data_acquisition()
             };
             all_player.push_back(player_data_info);
         }
-        
+        int curr_frame = get_game_frame();
         struct FrameInfo frame_info
         {
+            curr_frame,
             all_unit,
             all_player
         };
