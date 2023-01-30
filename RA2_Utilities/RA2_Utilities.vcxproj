@@ -162,11 +162,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tcp_server.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="http_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="apc_inject.h" />
     <ClInclude Include="data_processing.h" />
     <ClInclude Include="find_game.h" />
+    <ClInclude Include="http_server.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_internal.h" />

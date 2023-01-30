@@ -37,6 +37,8 @@ void Game::searchGameTask()
                             game_status = 0;
                             CloseHandle(game_handle);
                             game_handle = nullptr;
+
+                            handle_game_data();
                         }
                         continue;
                     }

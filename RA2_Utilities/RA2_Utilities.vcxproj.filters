@@ -28,6 +28,9 @@
     <Filter Include="tcp_server">
       <UniqueIdentifier>{f27a36ca-a858-4a87-9514-6c74fc9699a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="http_server">
+      <UniqueIdentifier>{7ab4bca8-b2bf-42d5-8a4b-fb44c018629d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,6 +87,9 @@
     <ClCompile Include="data_processing.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="http_server.cpp">
+      <Filter>http_server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include.h">
@@ -133,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="data_processing.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="http_server.h">
+      <Filter>http_server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

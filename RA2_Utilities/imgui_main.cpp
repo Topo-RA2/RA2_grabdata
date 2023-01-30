@@ -84,6 +84,19 @@ void firstLoad()
     }
 }
 
+template <typename T>
+int BinarySearch(const T* arr, int l, int r, T x) {
+    if (r >= l) {
+        int mid = l + (r - l) / 2;
+        if (arr[mid] == x)
+            return mid;
+        if (arr[mid] > x)
+            return BinarySearch(arr, l, mid - 1, x);
+        return BinarySearch(arr, mid + 1, r, x);
+    }
+    return -1;
+}
+
 void render_handle()
 {
     firstLoad();
@@ -95,8 +108,6 @@ void render_handle()
     ImGui::NewFrame();
 
     ImGui::Begin("DirectX9 Texture Test");
-    ImGui::Text("pointer = %p", my_texture);
-    ImGui::Text("size = %d x %d", img_width, img_height);
     ImVec2 p = ImGui::GetCursorScreenPos();
     int auto_width = 1600;
     ImGui::Image((void*)my_texture, ImVec2(auto_width, img_height * 1.0 / img_width * auto_width));
@@ -109,10 +120,6 @@ void render_handle()
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? "Game start!" : "Game end!");//Green
                                                                                                             //ImPlot::ShowDemoWindow();
     //ImGui::Checkbox("Get Task", &setting.switchGet);
-    //ImGui::Checkbox("Post Task", &setting.switchPost);
-    //ImGui::Checkbox("Del File", &setting.switchDelete);
-    //if (ImGui::Button("Exit"))
-    //    ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)safeExit, NULL, 0, NULL); // 上传结果线程
     if (ImGui::Button("Unsafe Exit"))
     {
         TerminateProcess(GetCurrentProcess(), -1);
@@ -122,7 +129,6 @@ void render_handle()
     //ImGui::DragFloat("postBandwidth (0 -> 3)", &setting.postBandwidth, 0.02f, 0.0f, 3.0f, "%.1f", ImGuiSliderFlags_None);
 
     //ImGui::ShowDemoWindow();
-    ImPlot::ShowDemoWindow();
 
     static bool animate = true;
     ToggleButton("animate", &animate);
