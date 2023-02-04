@@ -1,4 +1,2 @@
-#pragma once
 #include "include.h"
-
-void start_http_server();
+int start_http_server();

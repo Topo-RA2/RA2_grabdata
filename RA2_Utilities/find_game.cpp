@@ -1,15 +1,11 @@
 #include "find_game.h"
-#include "apc_inject.h"
-#include "tcp_server.h"
-#include "data_processing.h"
+#include "process_data.h"
+#include "get_data.h"
 
-#include <co/flag.h>
-#include <co/log.h>
-
+extern int showUIState;
 
 Game::Game()
 {
-    flag::set_value("cout", "true"); // FLG_b -> true
 	searchGameTask();
 }
 
@@ -53,22 +49,15 @@ void Game::searchGameTask()
                     {
                         if (game_status == 0)//第一次发现进程，关闭结算界面
                         {
-                            reset_queue_game_data();
-
                             //cout << "[searchGameTask] find game & init" << "\n";
                             GetWindowThreadProcessId(game_window_handle, &game_pid);
                             game_handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, game_pid);
-                            ++game_id;
                             game_status = 1;
-                            read_once = 1;
+                            showUIState = 0;
+                            OutputDebugStringA("Start");
 
-                            PCWSTR pszLibFile = NULL;
-                            const wchar_t* dll_path = L"C:\\Users\\49673\\Documents\\GitHub\\RA2_grabdata\\Release\\gamemd_inject.dll";
-                            pszLibFile = (wchar_t*)malloc((wcslen(dll_path) + 1) * sizeof(wchar_t));
-                            pszLibFile = dll_path;
-
-                            LOG << "APC: " << demoQueueUserAPC(pszLibFile, game_pid);
-                            start_tcp_thread();
+                            thread data_thread(get_game_data);
+                            data_thread.detach();
                         }
                     }
                     //std::cout << "[searchGameTask] game_status: " << game_status << '\n';

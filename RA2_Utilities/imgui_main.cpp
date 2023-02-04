@@ -1,8 +1,5 @@
 #include "imgui_main.h"
-//#include "implot_demo.cpp"
-
-
-
+#include "process_data.h"
 // Data
 LPDIRECT3D9              g_pD3D = NULL;
 LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
@@ -12,6 +9,7 @@ HWND hwnd = NULL;
 WNDCLASSEX wc{ 0 };
 // Helper functions
 
+std::map<int, ImVec4> rgbTable;
 
 void ResetDevice()
 {
@@ -55,35 +53,6 @@ PDIRECT3DTEXTURE9 my_texture = NULL;
 int img2_width, img2_height, img2_channel;
 PDIRECT3DTEXTURE9 small_id = NULL;
 
-bool LoadTextureFromFile(const char* filename, PDIRECT3DTEXTURE9* out_texture, int* out_width, int* out_height)
-{
-    // Load texture from disk
-    PDIRECT3DTEXTURE9 texture;
-    HRESULT hr = D3DXCreateTextureFromFileA(g_pd3dDevice, filename, &texture);
-    if (hr != S_OK)
-        return false;
-
-    // Retrieve description of the texture surface so we can access its size
-    D3DSURFACE_DESC my_image_desc;
-    texture->GetLevelDesc(0, &my_image_desc);
-    *out_texture = texture;
-    *out_width = (int)my_image_desc.Width;
-    *out_height = (int)my_image_desc.Height;
-    return true;
-}
-
-void firstLoad()
-{
-    if (init_img == 0)
-    {
-        bool ret = LoadTextureFromFile("C:\\Users\\49673\\Desktop\\spawnmap.jpg", &my_texture, &img_width, &img_height);
-        IM_ASSERT(ret);
-        ret = LoadTextureFromFile("C:\\Users\\49673\\Desktop\\icon.jpg", &small_id, &img2_width, &img2_height);
-        IM_ASSERT(ret);
-        init_img = 1;
-    }
-}
-
 template <typename T>
 int BinarySearch(const T* arr, int l, int r, T x) {
     if (r >= l) {
@@ -97,46 +66,120 @@ int BinarySearch(const T* arr, int l, int r, T x) {
     return -1;
 }
 
+extern int showUIState;
+extern vector<FrameInfo> all_frame;
+extern vector<GlobalPlayerInfo> all_player_info;
+
 void render_handle()
 {
-    firstLoad();
-    // Start the Dear ImGui frame
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("DirectX9 Texture Test");
-    ImVec2 p = ImGui::GetCursorScreenPos();
-    int auto_width = 1600;
-    ImGui::Image((void*)my_texture, ImVec2(auto_width, img_height * 1.0 / img_width * auto_width));
-    //ImGui::GetWindowDrawList()->AddImage(small_id, p, ImVec2(p.x + img2_width, p.y + img2_height), ImVec2(0, 0), ImVec2(1, 1));
-    ImGui::GetWindowDrawList()->AddImage(small_id, p, ImVec2(p.x + 100, p.y + 100), ImVec2(0, 0), ImVec2(1, 1));
+    ImGui::Begin("Main", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
-    ImGui::End();
-
-
-    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? "Game start!" : "Game end!");//Green
-                                                                                                            //ImPlot::ShowDemoWindow();
-    //ImGui::Checkbox("Get Task", &setting.switchGet);
-    if (ImGui::Button("Unsafe Exit"))
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), game.game_status == 1 ? u8"游戏启动!" : u8"游戏结束!");
+    
+    static int initFile = 0;
+    if (initFile == 0)
     {
-        TerminateProcess(GetCurrentProcess(), -1);
+        handle_game_data();
+        initFile++;
+    }
+    ImPlot::ShowDemoWindow();
+    
+
+    if (ImGui::BeginTable("table_columns_flags", 2, ImGuiTableFlags_None))
+    {
+
+        static bool showUnit = true;
+        static bool showInfantry = true;
+        static int frameIndex = 0;
+        static float unit_x[500] = { 0 }, unit_y[500] = { 0 };
+
+        {
+            ImGui::TableNextColumn();
+            ImGui::PushID(0);
+
+            //ToggleButton("showUnit", &showUnit);
+            //ToggleButton("showInfantry", &showInfantry);
+            ImGui::SliderInt("frameIndex", &frameIndex, 0, all_frame.size());
+            ImGui::SliderInt("frameIndex", &frameIndex, 0, all_frame.size());
+
+            ImGui::PopID();
+        }
+        {
+            ImGui::TableNextColumn();
+            ImGui::PushID(1);
+            if (1 == showUIState)
+            {
+
+                memset(unit_x, 0, sizeof(unit_x));
+                memset(unit_y, 0, sizeof(unit_y));
+                if (all_frame.size() != 0)
+                {
+                    if (showUnit)
+                    {
+                        int cnt = 0;
+                        for (int each_unit = 0; each_unit < all_frame[frameIndex].vec_fui.size(); ++each_unit)
+                        {
+                            if (0 != all_frame[frameIndex].vec_fui[each_unit].x && 0 != all_frame[frameIndex].vec_fui[each_unit].y)
+                            {
+                                unit_x[cnt] = all_frame[frameIndex].vec_fui[each_unit].x;
+                                unit_y[cnt] = -all_frame[frameIndex].vec_fui[each_unit].y;// +0.5f * ((float)rand() / (float)RAND_MAX);
+                                ++cnt;
+                            }
+                        }
+                    }
+
+                    ++frameIndex;
+                    if (frameIndex >= all_frame.size())
+                    {
+                        frameIndex = all_frame.size() - 1;
+                    }
+                }
+
+                if (ImPlot::BeginPlot("Scatter Plot", ImVec2(800, 800)))
+                {
+                    ImPlot::SetupLegend(ImPlotLocation_South | ImPlotLocation_East, ImPlotLegendFlags_Outside);
+                    static ImPlotRect lims(0, 120, -120, 0);
+                    static bool linkx = true, linky = true;
+
+                    ImPlot::SetupAxisLinks(ImAxis_X1, linkx ? &lims.X.Min : NULL, linkx ? &lims.X.Max : NULL);
+                    ImPlot::SetupAxisLinks(ImAxis_Y1, linky ? &lims.Y.Min : NULL, linky ? &lims.Y.Max : NULL);
+
+                    ImPlot::PlotScatter("Data 1", unit_x, unit_y, all_frame[frameIndex].vec_fui.size());
+                    ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 1.25f);
+                    ImPlot::SetNextMarkerStyle(ImPlotMarker_Square, 6, ImPlot::GetColormapColor(1), IMPLOT_AUTO, ImPlot::GetColormapColor(1));
+                    ImPlot::PopStyleVar();
+                    ImPlot::EndPlot();
+                }
+
+            }
+            else if (0 == showUIState)
+            {
+
+            }
+            else if (999 == showUIState)
+            {
+
+            }
+            ImGui::PopID();
+        }
+        
+        
+
+
+        ImGui::EndTable();
     }
 
-    //ImGui::DragInt("taskLen (1 -> 5)", &setting.taskLen, 0.1f, 1, 5, "%d", ImGuiSliderFlags_None);
-    //ImGui::DragFloat("postBandwidth (0 -> 3)", &setting.postBandwidth, 0.02f, 0.0f, 3.0f, "%.1f", ImGuiSliderFlags_None);
 
-    //ImGui::ShowDemoWindow();
-
-    static bool animate = true;
-    ToggleButton("animate", &animate);
-    ImGui::Checkbox("Animate", &animate);
     static float values[90] = {};
     static int values_offset = 0;
     static double refresh_time = 0.0;
-    if (!animate || refresh_time == 0.0)
+    if (refresh_time == 0.0)
         refresh_time = ImGui::GetTime();
     while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
     {
@@ -146,7 +189,7 @@ void render_handle()
         phase += 0.10f * values_offset;
         refresh_time += 1.0f / 60.0f;
     }
-
+    ImGui::End();
 
     // Rendering
     ImGui::EndFrame();
@@ -163,11 +206,8 @@ void render_handle()
     }
     HRESULT result = g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
 
-    // Handle loss of D3D9 device
     if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         ResetDevice();
-
-    //g_texture->Release();
 }
 
 void init_wnd()
@@ -186,13 +226,13 @@ void init_wnd()
         NULL,
         NULL,
         NULL,
-        _T("ImGui Example"),
+        _T("RA2_Data_analysis"),
         NULL
     };
     ::RegisterClassEx(&wc);
     hwnd = CreateWindow(
         wc.lpszClassName,
-        _T("Dear ImGui DirectX9"),
+        _T("RA2_Data_analysis"),
         WS_OVERLAPPEDWINDOW,
         100, 100, 1600, 900,
         NULL,
@@ -239,8 +279,23 @@ void init_imgui()
     ImGui_ImplDX9_Init(g_pd3dDevice);
 
     float scale = ImGui_ImplWin32_GetDpiScaleForHwnd(hwnd);
-    io.Fonts->AddFontFromFileTTF("./Roboto-Medium.ttf", 18.0f * scale);
+
+    ImFontConfig config;
+    config.OversampleH = 2;
+    config.OversampleV = 2;
+    io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
+    io.Fonts->AddFontFromFileTTF("./PingFang-SC-Semibold-2.ttf", 20.0f * scale, &config, io.Fonts->GetGlyphRangesChineseFull());
+
     ImGui::GetStyle().ScaleAllSizes(scale);
+
+    rgbTable[3] =   (ImVec4)ImColor(222, 227, 8);
+    rgbTable[11] =  (ImVec4)ImColor(255, 24, 24);
+    rgbTable[21] =  (ImVec4)ImColor(41, 117, 231);
+    rgbTable[29] =  (ImVec4)ImColor(57, 211, 41);
+    rgbTable[13] =  (ImVec4)ImColor(255, 162, 24);
+    rgbTable[25] =  (ImVec4)ImColor(49, 215, 231);
+    rgbTable[17] =  (ImVec4)ImColor(148, 40, 189);
+    rgbTable[15] =  (ImVec4)ImColor(255, 154, 239);
 }
 
 void msg_handle()

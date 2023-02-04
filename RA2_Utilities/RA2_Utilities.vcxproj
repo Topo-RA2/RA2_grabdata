@@ -77,7 +77,10 @@
     <IncludePath>../include/directx/include;./imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>./imgui;../include/directx/include;../include/cocoyaxi/include;$(IncludePath)</IncludePath>
+    <IncludePath>./imgui;../include/directx/include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,17 +103,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../include/directx/lib;../include/cocoyaxi/lib;../include/openssl/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;co.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalLibraryDirectories>../include/directx/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -144,10 +148,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="apc_inject.cpp" />
     <ClCompile Include="constant.cpp" />
-    <ClCompile Include="data_processing.cpp" />
+    <ClCompile Include="get_data.cpp" />
+    <ClCompile Include="process_data.cpp" />
     <ClCompile Include="find_game.cpp" />
+    <ClCompile Include="http_server.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -160,14 +165,13 @@
     <ClCompile Include="imgui_main.cpp" />
     <ClCompile Include="implot_demo.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="tcp_server.cpp" />
     <ClCompile Include="test.cpp" />
-    <ClCompile Include="http_server.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="apc_inject.h" />
-    <ClInclude Include="data_processing.h" />
+    <ClInclude Include="get_data.h" />
+    <ClInclude Include="process_data.h" />
     <ClInclude Include="find_game.h" />
+    <ClInclude Include="httplib.h" />
     <ClInclude Include="http_server.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -181,7 +185,9 @@
     <ClInclude Include="imgui_impl_win32.h" />
     <ClInclude Include="imgui_main.h" />
     <ClInclude Include="include.h" />
-    <ClInclude Include="tcp_server.h" />
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="output_log.h" />
+    <ClInclude Include="read_mem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

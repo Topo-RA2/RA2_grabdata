@@ -25,11 +25,14 @@
     <Filter Include="test">
       <UniqueIdentifier>{1feba571-486c-4c75-9ddf-05c552c041df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tcp_server">
-      <UniqueIdentifier>{f27a36ca-a858-4a87-9514-6c74fc9699a2}</UniqueIdentifier>
+    <Filter Include="env">
+      <UniqueIdentifier>{83f4e317-336a-40f6-a969-923a67cc726f}</UniqueIdentifier>
     </Filter>
     <Filter Include="http_server">
-      <UniqueIdentifier>{7ab4bca8-b2bf-42d5-8a4b-fb44c018629d}</UniqueIdentifier>
+      <UniqueIdentifier>{dd01aa21-327c-4b0a-875c-50e21ef132d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{02e0a9cb-0a28-4be2-8965-030b4ce8efc3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -78,17 +81,14 @@
     <ClCompile Include="test.cpp">
       <Filter>test</Filter>
     </ClCompile>
-    <ClCompile Include="apc_inject.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="tcp_server.cpp">
-      <Filter>tcp_server</Filter>
-    </ClCompile>
-    <ClCompile Include="data_processing.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="http_server.cpp">
       <Filter>http_server</Filter>
+    </ClCompile>
+    <ClCompile Include="get_data.cpp">
+      <Filter>data</Filter>
+    </ClCompile>
+    <ClCompile Include="process_data.cpp">
+      <Filter>data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,17 +131,26 @@
     <ClInclude Include="imgui\implot_internal.h">
       <Filter>imgui_backend</Filter>
     </ClInclude>
-    <ClInclude Include="apc_inject.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="output_log.h">
+      <Filter>env</Filter>
     </ClInclude>
-    <ClInclude Include="tcp_server.h">
-      <Filter>tcp_server</Filter>
-    </ClInclude>
-    <ClInclude Include="data_processing.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="httplib.h">
+      <Filter>env</Filter>
     </ClInclude>
     <ClInclude Include="http_server.h">
       <Filter>http_server</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>env</Filter>
+    </ClInclude>
+    <ClInclude Include="process_data.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="get_data.h">
+      <Filter>data</Filter>
+    </ClInclude>
+    <ClInclude Include="read_mem.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

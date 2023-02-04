@@ -6,7 +6,12 @@
 
 Game game;
 
-int main()
+int _stdcall WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow
+)
 {
     thread http_thread(start_http_server);
     http_thread.detach();
